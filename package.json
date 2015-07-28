@@ -1,6 +1,6 @@
 {
   "name": "react-native-storage",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). ES6/babel is needed.",
   "main": "storage.js",
   "scripts": {

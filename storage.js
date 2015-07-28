@@ -129,7 +129,7 @@ export default class Storage {
       })
     })
   }
-  static _loadGlobalItem(ret, resolve, reject){
+  static _loadGlobalItem(id, ret, resolve, reject){
     if(ret === null || ret === 'undefined'){
       if(Storage.sync[id]){
         Storage.sync[id](resolve, reject);
@@ -203,11 +203,11 @@ export default class Storage {
       if(global){
         if(isBrowser){
           ret = s.getItem(id);
-          Storage._loadGlobalItem(ret, resolve, reject);
+          Storage._loadGlobalItem(id, ret, resolve, reject);
         }
         else{
           s.getItem(id).then(ret => {
-            Storage._loadGlobalItem(ret, resolve, reject);
+            Storage._loadGlobalItem(id, ret, resolve, reject);
           })
         }
       }
