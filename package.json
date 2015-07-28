@@ -1,0 +1,24 @@
+{
+  "name": "react-native-storage",
+  "version": "0.0.2",
+  "description": "This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). ES6/babel is needed.",
+  "main": "storage.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunnylqm/react-native-storage.git"
+  },
+  "keywords": [
+    "react-native",
+    "localStorage",
+    "AsyncStorage"
+  ],
+  "author": "sunnylqm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sunnylqm/react-native-storage/issues"
+  },
+  "homepage": "https://github.com/sunnylqm/react-native-storage#readme"
+}

@@ -1,11 +1,20 @@
 # react-native-storage
-This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage).[ES6/babel](https://babeljs.io/) is needed.    
+This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). [ES6/babel](https://babeljs.io/) is needed.    
 You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) for [legacy iOS devices/browsers](http://caniuse.com/#search=promise).
 
 这是一个本地持久存储的封装，可以同时支持react-native(AsyncStorage)和浏览器(localStorage)。由于代码使用ES6语法编写，因而需要[babel库](https://babeljs.io/)的支持。
 如果iOS设备或浏览器版本较老（不支持[Promise](http://caniuse.com/#search=promise)）,则还需要一个Promise的[兼容库](https://github.com/jakearchibald/es6-promise)。
 
+## Install 安装
+	npm install react-native-storage --save
+	
+
 ## Usage 使用说明
+### Import 导入
+You need to use [babel](https://babeljs.io/) to enable module import. For React-Native development, add 'es6.modules' to the **whitelist** in `node_modules/react-native/packager/transformer.js`        
+你需要使用[babel](https://babeljs.io/)来支持模块导入功能。  如果是React-Native开发，在`node_modules/react-native/packager/transformer.js的whitelist`中加入'es6.modules'即可。
+
+	import Storage from 'react-native-storage'
 
 ### Save & Load 保存和读取
 	Storage.save(id, data, global, expires)
@@ -14,7 +23,7 @@ You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) 
 	}).catch(error){
 		console.warn(error);
 	}
-Use these methods to save/load any legal type of javaScript data. It will automatically transform data into JSON string and vice versa.    
+Use these methods to save/load any legal type of javaScript data. They will automatically transform data into JSON string and vice versa.    
 使用这两个方法来保存和读取任意合法类型的js数据。它们会自动转换JSON字符串或将JSON解析为数据对象。    
 **Attention:** By default, there is a private property *map* which records indices of stored data. And it has a default SIZE of 1000, which means the capacity would be 1000 records. And if exceeded, new data would overwrite the first record without warnings(but won't cause disorder), to prevent the size from uncontrollable increasing. You can alter the SIZE using:    
   
@@ -66,5 +75,18 @@ If there is no user_123 stored currently, then Storage.sync.user would be trigge
 	Storage.getBatchDataWithKeys(keys)
 	Storage.getBatchDataWithIds(key, ids)
 	
-These methods are ready to use, while the document is WIP(work in progress).   
-以上两个方法已经可以使用，但具体说明待续。
+If you want to get several data to in one action, then use these methods. Examples:   
+如果你想在一次操作中获取多个数据，那就使用上面的两个方法。示例： 
+
+	Storage.getBatchDataWithKeys(['user_123', 'company_321', 'token'])
+	.then( results => {
+		results.forEach( result => {
+			console.info(result);
+		})
+	})
+	
+	Storage.getBatchDataWithIds('images', ['1001', '1002', '1003'])
+	.then( ... )
+	
+There is a notable difference between the two methods except the arguments. **getBatchDataWithKeys** will invoke different sync methods(since the keys are different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to a array, then pass the array to the corresponding sync method(to avoid too many requests), so you need to implement array query on server end.    
+这两个方法除了参数形式不同，还有个值得注意的差异。**getBatchDataWithKeys**会在数据缺失时挨个调用不同的sync方法(因为key不同)。但是**getBatchDataWithIds**却会把缺失的数据统计起来，将它们的id收集到一个数组中，然后一次传递给对应的sync方法(避免挨个查询导致同时发起大量请求)，所以你需要在服务端实现通过数组来查询返回。
