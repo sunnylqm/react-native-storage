@@ -11,10 +11,11 @@ You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) 
 
 ## Usage 使用说明
 ### Import 导入
-You need to use [babel](https://babeljs.io/) to enable module import. For React-Native development, add 'es6.modules' to the **whitelist** in `node_modules/react-native/packager/transformer.js`        
-你需要使用[babel](https://babeljs.io/)来支持模块导入功能。  如果是React-Native开发，在`node_modules/react-native/packager/transformer.js的whitelist`中加入'es6.modules'即可。
+	var Storage = require('react-native-storage');
 
-	import Storage from 'react-native-storage'
+or 或者
+
+	import Storage from 'react-native-storage';
 
 ### Save & Load 保存和读取
 	Storage.save(id, data, global, expires)
