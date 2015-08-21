@@ -1,6 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunny 2015-07-27
+ *  sunnylqm 2015-07-29
+ *  version 0.0.4
  */
 let cache = {};
 let _SIZE = 1000;
@@ -168,10 +169,9 @@ export default class Storage {
     }
     else{
       ret = JSON.parse(ret);
-      if(ret && ret.expires < new Date().getTime()){
-        if(kv.length > 1 && Storage.sync[kv[0]]){
-          Storage.sync[kv[0]](kv[1]);
-        }
+      if(autoSync && ret && ret.expires < new Date().getTime()
+         && kv.length > 1 && Storage.sync[kv[0]]){
+        Storage.sync[kv[0]](kv[1]);
       }
       ret.objWrap && (ret = ret.objWrap);
       resolve(ret);
@@ -256,5 +256,27 @@ export default class Storage {
   }
 }
 Storage.sync = {
-  //TODO add your own sync method.
+  //TODO  implement your own sync methods like the following.
+  //TODO  Do not forget append **resolve** and **reject**
+
+  //user(id, resolve, reject){
+  //  fetch('user/', {
+  //    method: 'GET',
+  //    body: 'id=' + id
+  //  }).then(function(response) {
+  //    return response.json();
+  //  }).then(function(data) {
+  //    //console.info(data);
+  //    if(data && data.user){
+  //      data = data.user;
+  //      Storage.save('user_' + data.id, data);
+  //      resolve && resolve(data);
+  //    }
+  //    else{
+  //      reject && reject();
+  //    }
+  //  }).catch((error) => {
+  //    console.warn(error);
+  //  });
+  //}
 }
