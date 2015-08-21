@@ -89,5 +89,5 @@ If you want to get several data to in one action, then use these methods. Exampl
 	Storage.getBatchDataWithIds('images', ['1001', '1002', '1003'])
 	.then( ... )
 	
-There is a notable difference between the two methods except the arguments. **getBatchDataWithKeys** will invoke different sync methods(since the keys are different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to a array, then pass the array to the corresponding sync method(to avoid too many requests), so you need to implement array query on server end.    
+There is a notable difference between the two methods except the arguments. **getBatchDataWithKeys** will invoke different sync methods(since the keys are different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests), so you need to implement array query on server end.    
 这两个方法除了参数形式不同，还有个值得注意的差异。**getBatchDataWithKeys**会在数据缺失时挨个调用不同的sync方法(因为key不同)。但是**getBatchDataWithIds**却会把缺失的数据统计起来，将它们的id收集到一个数组中，然后一次传递给对应的sync方法(避免挨个查询导致同时发起大量请求)，所以你需要在服务端实现通过数组来查询返回。
