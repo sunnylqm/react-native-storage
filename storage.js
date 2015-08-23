@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
  *  sunnylqm 2015-08-23
- *  version 0.0.4
+ *  version 0.0.5
  */
 let cache = {};
 let m;
@@ -38,7 +38,7 @@ export default class Storage {
   static set _SIZE(newSize) {
     _SIZE = newSize;
   }
-  static _saveToMap(m, id, d) {
+  static _saveToMap(id, d) {
     let s = Storage._s;
     if(m[id]){
       s.setItem('map_' + m[id],d);
@@ -184,7 +184,7 @@ export default class Storage {
     let s = Storage._s,
       kv = id.split('_'),
       ret;
-    if(m && m[id] !== undefined){
+    if(m[id] !== undefined){
       if(isBrowser){
         ret = s.getItem('map_' + m[id]);
         Storage._loadMapItem(ret, kv, resolve, reject, autoSync);
