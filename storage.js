@@ -1,17 +1,19 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2015-07-29
+ *  sunnylqm 2015-08-23
  *  version 0.0.4
  */
 let cache = {};
+let m;
 let _SIZE = 1000;
 let _s;
 let isBrowser = false;
 if(window && window.localStorage){
   try {
-    window.localStorage.setItem('test','test');
+    window.localStorage.setItem('test', 'test');
     _s = window.localStorage;
     isBrowser = true;
+    m = JSON.parse(_s.getItem('map')) || { index: 0 };
   }
   catch(e){
     console.warn(e);
@@ -19,6 +21,9 @@ if(window && window.localStorage){
 }
 else{
   _s = require('react-native').AsyncStorage;
+  _s.getItem('map').then( map => {
+    m = JSON.parse(map) || { index: 0 };
+  });
 }
 export default class Storage {
   static get cache(){
@@ -35,9 +40,6 @@ export default class Storage {
   }
   static _saveToMap(m, id, d) {
     let s = Storage._s;
-    if(!m){
-      m = { index: 0 };
-    }
     if(m[id]){
       s.setItem('map_' + m[id],d);
     }
@@ -46,8 +48,8 @@ export default class Storage {
         m.index = 1;
       }
       m[id] = m.index;
-      s.setItem('map_' + m.index,d);
-      s.setItem('map',JSON.stringify(m));
+      s.setItem('map_' + m.index, d);
+      s.setItem('map', JSON.stringify(m));
     }
   }
   static save(id, data, global, expires){
@@ -71,15 +73,16 @@ export default class Storage {
         s.setItem(id, d);
       }
       else{
-        if(isBrowser){
-          let m = JSON.parse(s.getItem('map'));
-          Storage._saveToMap(m, id, d);
-        }
-        else{
-          s.getItem('map').then( m => {
-            Storage._saveToMap(JSON.parse(m), id, d);
-          })
-        }
+        Storage._saveToMap(id, d);
+        //if(isBrowser){
+        //  let m = Storage.cache.map || (Storage.cache.map = JSON.parse(s.getItem('map')));
+        //  Storage._saveToMap(m, id, d);
+        //}
+        //else{
+        //  s.getItem('map').then( m => {
+        //    Storage._saveToMap(JSON.parse(m), id, d);
+        //  })
+        //}
 
       }
     }
@@ -177,7 +180,7 @@ export default class Storage {
       resolve(ret);
     }
   }
-  static _lookUpInMap(m, id, resolve, reject, autoSync){
+  static _lookUpInMap(id, resolve, reject, autoSync){
     let s = Storage._s,
       kv = id.split('_'),
       ret;
@@ -212,15 +215,16 @@ export default class Storage {
         }
       }
       else{
-        if(isBrowser){
-          let m = JSON.parse(s.getItem('map'));
-          Storage._lookUpInMap(m, id, resolve, reject, autoSync);
-        }
-        else{
-          s.getItem('map').then( m => {
-            Storage._lookUpInMap(JSON.parse(m), id, resolve, reject, autoSync);
-          })
-        }
+        Storage._lookUpInMap(id, resolve, reject, autoSync);
+        //if(isBrowser){
+        //  let m = JSON.parse(s.getItem('map'));
+        //  Storage._lookUpInMap(m, id, resolve, reject, autoSync);
+        //}
+        //else{
+        //  s.getItem('map').then( m => {
+        //    Storage._lookUpInMap(JSON.parse(m), id, resolve, reject, autoSync);
+        //  })
+        //}
 
       }
     });
@@ -229,6 +233,7 @@ export default class Storage {
   static clearMap(){
     let s = Storage._s;
     s.removeItem('map');
+    m = { index: 0 };
     //var s = Storage._s,
     //    m = JSON.parse(s.getItem('map'));
     //if(m){
