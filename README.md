@@ -76,7 +76,7 @@ If there is no user_123 stored currently, then Storage.sync.user would be trigge
 	Storage.getBatchDataWithKeys(keys)
 	Storage.getBatchDataWithIds(key, ids)
 	
-If you want to get several data to in one action, then use these methods. Examples:   
+If you want to get several data in one action, then use these methods. Examples:   
 如果你想在一次操作中获取多个数据，那就使用上面的两个方法。示例： 
 
 	Storage.getBatchDataWithKeys(['user_123', 'company_321', 'token'])

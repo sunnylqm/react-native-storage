@@ -52,14 +52,12 @@ export default class Storage {
       s.setItem('map', JSON.stringify(m));
     }
   }
-  static save(id, data, global, expires){
+  static save(id, rawData, global, expires){
     let s = Storage._s, d;
     if(s){
-      if(typeof data !== 'object' || data === null){
-        data = {
-          objWrap:data
-        };
-      }
+      let data = {
+        rawData
+      };
       let now = new Date().getTime();
       if(expires === undefined){
         expires = 24*3600*1000;
@@ -147,8 +145,7 @@ export default class Storage {
       if(ret && ret.expires < new Date().getTime()){
         Storage.sync[id] && Storage.sync[id]();
       }
-      ret.objWrap && (ret = ret.objWrap);
-      resolve(ret);
+      resolve(ret.rawData);
     }
   }
   static _noItemFound(kv, resolve, reject, autoSync){
@@ -176,8 +173,7 @@ export default class Storage {
          && kv.length > 1 && Storage.sync[kv[0]]){
         Storage.sync[kv[0]](kv[1]);
       }
-      ret.objWrap && (ret = ret.objWrap);
-      resolve(ret);
+      resolve(ret.rawData);
     }
   }
   static _lookUpInMap(id, resolve, reject, autoSync){
