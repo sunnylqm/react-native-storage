@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2015-08-23
- *  version 0.0.5
+ *  sunnylqm 2015-08-24
+ *  version 0.0.6
  */
 let cache = {};
 let m;
