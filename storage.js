@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
  *  sunnylqm 2015-08-24
- *  version 0.0.6
+ *  version 0.0.7
  */
 let cache = {};
 let m;
@@ -115,13 +115,19 @@ export default class Storage {
     return new Promise((resolve, reject) => {
       let missed = [];
       Promise.all(tasks).then(values => {
-        values.map(value =>{
+        values = values.filter(value =>{
           if(value.syncId !== undefined){
             missed.push(value.syncId);
+            return false;
+          }
+          else{
+            return true;
           }
         });
         if(missed.length){
-          Storage.sync[key](missed, resolve, reject);
+          Storage.sync[key](missed, data => {
+            resolve(values.concat(data));
+          }, reject);
         }
         else{
           resolve(values);
