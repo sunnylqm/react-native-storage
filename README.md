@@ -11,6 +11,9 @@ You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) 
 
 ## Usage 使用说明
 ### Import 导入
+You need to use [babel](https://babeljs.io/) to enable es6 modules. For React-Native development, add 'es6.modules' to the **whitelist** in `node_modules/react-native/packager/transformer.js`    
+你需要使用[babel](https://babeljs.io/)来支持es6模块导入功能。  如果是React-Native开发，在`node_modules/react-native/packager/transformer.js的whitelist`中加入'es6.modules'即可。
+
 	var Storage = require('react-native-storage');
 
 or 或者
