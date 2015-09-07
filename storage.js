@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2015-08-24
- *  version 0.0.7
+ *  sunnylqm 2015-09-01
+ *  version 0.0.8
  */
 let cache = {};
 let m;
@@ -148,7 +148,7 @@ export default class Storage {
     }
     else{
       ret = JSON.parse(ret);
-      if(ret && ret.expires < new Date().getTime()){
+      if(ret.expires < new Date().getTime()){
         Storage.sync[id] && Storage.sync[id]();
       }
       resolve(ret.rawData);
@@ -175,9 +175,16 @@ export default class Storage {
     }
     else{
       ret = JSON.parse(ret);
-      if(autoSync && ret && ret.expires < new Date().getTime()
-         && kv.length > 1 && Storage.sync[kv[0]]){
-        Storage.sync[kv[0]](kv[1]);
+      if(ret.expires < new Date().getTime()){
+        if(autoSync && kv.length > 1 && Storage.sync[kv[0]]) {
+          Storage.sync[kv[0]](kv[1]);
+        }
+        else{
+          resolve({
+            syncId: kv[1]
+          });
+          return;
+        }
       }
       resolve(ret.rawData);
     }
