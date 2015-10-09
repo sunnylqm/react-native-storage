@@ -220,3 +220,6 @@ If there is no user 1002 stored currently, then storage.sync.user would be invok
 	
 There is a notable difference between the two methods except the arguments. **getBatchData** will invoke different sync methods(since the keys may be different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests) once, so you need to implement array query on server end and handle the parameters of sync method properly(cause the id parameter can be a single string or an array of strings).    
 这两个方法除了参数形式不同，还有个值得注意的差异。**getBatchData**会在数据缺失时挨个调用不同的sync方法(因为key不同)。但是**getBatchDataWithIds**却会把缺失的数据统计起来，将它们的id收集到一个数组中，然后一次传递给对应的sync方法(避免挨个查询导致同时发起大量请求)，所以你需要在服务端实现通过数组来查询返回，还要注意对应的sync方法的参数处理（因为id参数可能是一个字符串，也可能是一个数组的字符串）。
+
+####You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page. 
+####如有任何问题，欢迎在[issues](https://github.com/sunnylqm/react-native-storage/issues)页面中提出。
