@@ -1,5 +1,7 @@
 # react-native-storage
 
+[English version doc here](README.md)
+
 这是一个本地持久存储的封装，可以同时支持react-native(AsyncStorage)和浏览器(localStorage)。ES6语法，promise异步读取，使用jest进行了完整的单元测试。由于代码使用ES6语法编写，因而需要[babel库](http://babeljs.io/docs/setup/#browserify)的支持。
 如果iOS设备或浏览器版本较老（不支持[Promise](http://caniuse.com/#search=promise)）,则还需要一个Promise的[兼容库](https://github.com/jakearchibald/es6-promise)。
 
