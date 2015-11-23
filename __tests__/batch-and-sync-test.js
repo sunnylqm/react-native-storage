@@ -346,7 +346,7 @@ describe('react-native-storage: batch and sync test', () => {
       expect(ret[0]).toBe(testData1);
       expect(ret[1]).toBe(testData2);
       expect(ret[2]).toBe(testData3);
-      expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify([testId3]));
+      expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify(testId3));
     });
   });
 });
