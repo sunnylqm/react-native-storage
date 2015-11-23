@@ -87,7 +87,6 @@ storage.load({
 	// syncInBackground(default true) means if data expired,
 	// return the outdated data first while invoke the sync method.
 	// It can be set to false to always return data provided by sync method when expired.(Of course it's slower)
-	// syncInBackground(默认为true)意味着如果数据过期，
 	syncInBackground: true
 }).then( ret => {
 	// found data goes to then()
