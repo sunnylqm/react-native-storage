@@ -2,7 +2,7 @@
 This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.    
 You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) for [legacy iOS devices/browsers](http://caniuse.com/#search=promise).
 
-[在中国也可](README-CHN.md)
+查看中文文档[请点击README-CHN.md](README-CHN.md)
 
 ## Install
 
