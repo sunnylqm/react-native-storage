@@ -143,17 +143,20 @@ export default class Storage {
     }
     return Promise.all(tasks);
   }
-  getBatchDataWithIds(params, limit) {
+  getBatchDataWithIds(params) {
     let me = this;
     let { key, ids, syncInBackground } = params;
 
     // 这里于之前的版本不同，之前的是成功的在前，失败的会 concat 到后面，新版本保留了原始顺序，需要注意。
-    return limitAllPromise(ids, (id) => me.load({ key, id, syncInBackground, autoSync: false, batched: true })
-        .then(
-          (value) => value.syncId !== undefined ?
-            handlePromise((resolve, reject) => me.sync[key]({id, resolve, reject})) :
-            value
-        ), limit || 10);
+    return Promise.all(
+      ids.map((id) => me.load({ key, id, syncInBackground, autoSync: false, batched: true }))
+    ).then((results) => handlePromise((resolve, reject) => me.sync[key]({
+      id: results
+        .filter((value) => value.syncId !== undefined)
+        .map((value) => value.syncId),
+      resolve: resolve,
+      reject: reject
+    })).then((data) => results.map((value) => value.syncId ? data.shift() : value)))
   }
   _lookupGlobalItem(params) {
     let me = this,
@@ -294,24 +297,5 @@ function handlePromise (fn) {
   return new Promise((resolve, reject) => {
     var promise, isPromise;
     if (isPromise = (promise = fn((data) => isPromise ? noop() : resolve(data), (err) => isPromise ? noop() : reject(err))) instanceof Promise) resolve(promise);
-  });
-}
-
-function limitAllPromise (arr, fn, limit) {
-  limit = limit || 10;
-  var args = [], remaining = arr.length, cursor = 0;
-  return new Promise((resolve, reject) => {
-    function run(index) {
-      fn(arr[index]).then((value) => {
-        args[index] = value;
-        if (--remaining === 0) {
-          return resolve(args);
-        }
-        cursor < arr.length && run(cursor++);
-      }, reject);
-    }
-    for (var i = 0; i < limit; i++) {
-      run(cursor++);
-    }
   });
 }
