@@ -311,7 +311,8 @@ describe('react-native-storage: batch and sync test', () => {
       done;
     let sync = jest.genMockFn().mockImpl( params => {
       let { resolve } = params;
-      resolve && resolve(testData3);
+      // 此处id为数组，返回也应该为同序数组，
+      resolve && resolve([testData3]);
     });
     storage.sync[testKey] = sync;
 
