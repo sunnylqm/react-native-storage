@@ -1,6 +1,6 @@
 {
   "name": "react-native-storage",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). ES6/babel is needed.",
   "main": "storage.js",
   "scripts": {
@@ -27,6 +27,6 @@
   "homepage": "https://github.com/sunnylqm/react-native-storage#readme",
   "devDependencies": {
     "babel-jest": "^5.3.0",
-    "jest-cli": "^0.5.10"
+    "jest-cli": "^0.8.0"
   }
 }
