@@ -259,6 +259,7 @@ export default class Storage {
       }
       return me.removeItem('map_' + m[newId]);
       delete m[newId];
+      s.setItem('map', JSON.stringify(m));
     }
   }
   load(params) {
