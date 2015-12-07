@@ -12,7 +12,7 @@ export default class Storage {
     me.sync = options.sync || {};      // remote sync method
     me.defaultExpires = options.defaultExpires || 1000 * 3600 * 24;
     me.enableCache = options.enableCache || true;
-    me._innerVersion = 9;
+    me._innerVersion = 10;
     me.cache = {};
 
     //detect browser or ios javascriptCore
@@ -68,7 +68,7 @@ export default class Storage {
       let { key, id, data } = params,
         newId = this._getId(key, id),
         m = this._m;
-      if(m[newId]) {
+      if(m[newId] !== undefined) {
         //update existed data
         if(this.enableCache) this.cache[newId] = JSON.parse(data);
         return resolve(this.setItem('map_' + m[newId], data));
@@ -147,7 +147,6 @@ export default class Storage {
     let me = this;
     let { key, ids, syncInBackground } = params;
 
-    // 这里于之前的版本不同，之前的是成功的在前，失败的会 concat 到后面，新版本保留了原始顺序，需要注意。
     return Promise.all(
       ids.map((id) => me.load({ key, id, syncInBackground, autoSync: false, batched: true }))
     ).then((results) => handlePromise((resolve, reject) => me.sync[key]({
@@ -254,7 +253,7 @@ export default class Storage {
     let newId = me._getId(key, id);
 
     //remove existed data
-    if(m[newId]) {
+    if(m[newId] !== undefined) {
       if(me.enableCache && me.cache[newId]) {
         delete me.cache[newId];
       }
