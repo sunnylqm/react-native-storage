@@ -257,8 +257,8 @@ export default class Storage {
       if(me.enableCache && me.cache[newId]) {
         delete me.cache[newId];
       }
-      delete m[newId];
       return me.removeItem('map_' + m[newId]);
+      delete m[newId];
     }
   }
   load(params) {
