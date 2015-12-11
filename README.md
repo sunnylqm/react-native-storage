@@ -12,17 +12,16 @@ You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) 
 ## Usage
 
 ### Config
-You need to use [babel](https://babeljs.io/) to enable es6 modules for web development(I'll provide an example in the next version). For React-Native development, put this [babel config file](https://github.com/brentvatne/react-native-animated-demo-tinder/blob/master/.babelrc) under your project directory. 
+You need to use [babel](https://babeljs.io/) to enable es6 modules for web development(I'll provide an example in the next version).   
+For React-Native development, you don't have to configure anything(but require react native version >= 0.13) 
 
 ### Import
-```bash
-var Storage = require('react-native-storage');
-```
-or
 
 ```bash
 import Storage from 'react-native-storage';
-```
+```  
+
+Note: do not use `require('react-native-storage')`, which would cause error in version 0.16.
 
 ### Init
 

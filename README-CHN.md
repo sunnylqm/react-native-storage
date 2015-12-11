@@ -13,17 +13,16 @@
 ### 配置
 
 对于Web开发你需要使用[babel](https://babeljs.io/)来支持es6模块导入功能。    
-对于React-Native开发，如果是0.12以上版本（不包含0.12），可以无需配置直接使用。如果是0.12及以下版本，把这个[babel配置文件](https://github.com/brentvatne/react-native-animated-demo-tinder/blob/master/.babelrc)放到你的项目根目录中即可。    
+对于React-Native开发，可以无需配置直接使用(但要求0.13或更高版本)。    
 
-### 导入
-```javascript
-var Storage = require('react-native-storage');
-```
-或者  
+### 导入 
 
 ```javascript
 import Storage from 'react-native-storage';
-```
+```    
+
+注意:请勿使用`require('react-native-storage')`语法, 否则在react native 0.16版本中会报错.  
+
 ### 初始化
 ```javascript
 var storage = new Storage({
