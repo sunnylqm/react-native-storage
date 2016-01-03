@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2015-10-01
- *  version 0.0.9
+ *  sunnylqm 2016-01-03
+ *  version 0.0.10
  */
 
 export default class Storage {
@@ -19,7 +19,7 @@ export default class Storage {
     me.isBrowser = false;
     if(window && window.localStorage) {
       try {
-        // key 名复杂化，防止碰撞
+        // avoid key conflict
         window.localStorage.setItem('__react_native_storage_test', 'test');
 
         me._s = window.localStorage;
@@ -100,6 +100,9 @@ export default class Storage {
     var promise;
     let me = this;
     let { key, id, rawData, expires } = params;
+    if(key.toString().includes('_')) {
+      console.error('Please do not use "_" in key!');
+    }
     let data = {
       rawData
     };
@@ -119,6 +122,9 @@ export default class Storage {
       promise = me.setItem(key, data);
     }
     else {
+      if(id.toString().includes('_')) {
+        console.error('Please do not use "_" in id!');
+      }
       promise = me._saveToMap({
         key,
         id,
@@ -257,9 +263,10 @@ export default class Storage {
       if(me.enableCache && me.cache[newId]) {
         delete me.cache[newId];
       }
-      return me.removeItem('map_' + m[newId]);
+      let idTobeDeleted = m[newId];
       delete m[newId];
-      s.setItem('map', JSON.stringify(m));
+      me.setItem('map', JSON.stringify(m));
+      return me.removeItem('map_' + idTobeDeleted);
     }
   }
   load(params) {

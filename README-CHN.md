@@ -60,7 +60,7 @@ var storage = new Storage({
   //除非你手动移除，这些数据会被永久保存，而且默认不会过期。
   //即便指定了且达到了过期时间，数据也不会被删除，而只是触发调用同步方法。
   storage.save({
-    key: 'loginState',
+    key: 'loginState',  //注意:请不要在key中使用_下划线符号!
     rawData: { 
       from: 'some other site',
       userid: 'some userid',
@@ -111,8 +111,8 @@ var storage = new Storage({
   };
 
   storage.save({
-    key: 'user',
-    id: '1001',   
+    key: 'user',  //注意:请不要在key中使用_下划线符号!
+    id: '1001',   //注意:请不要在id中使用_下划线符号!
     rawData: userA,
     expires: 1000 * 60   
   });

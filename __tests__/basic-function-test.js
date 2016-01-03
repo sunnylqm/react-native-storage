@@ -241,4 +241,47 @@ describe('react-native-storage: basic function', () => {
       storage._s.setItem('map', JSON.stringify(newMap));
     });
   });
+
+  pit('removes data correctly', () => {
+    let testKey1 = 'testKey1' + Math.random(),
+      testKey2 = 'testKey2' + Math.random(),
+      testId2 = 'testId2' + Math.random(),
+      testData1 = 'testData1' + Math.random(),
+      testData2 = 'testData2' + Math.random();
+    let ret1 = [undefined, undefined], ret2 = [undefined, undefined];
+    let task = (key, id, rawData, retArray) => {
+      return storage.save({
+        key,
+        id,
+        rawData
+      }).then(() => {
+        storage.load({
+          key,
+          id
+        }).then( ret => {
+          retArray[0] = ret;
+          storage.remove({
+            key
+          }).then(() => {
+            storage.load({
+              key,
+              id
+            }).then( ret => {
+              retArray[1] = ret;
+            });
+          })
+        })
+      });
+    };
+    let check = () => {
+      expect(ret1[0]).toBe(testData1);
+      expect(ret1[1]).toBeUndefined();
+      expect(ret2[0]).toBe(testData2);
+      expect(ret2[1]).toBeUndefined();
+    };
+    return Promise.all([
+      task(testKey1, undefined, testData1, ret1),
+      task(testKey2, testId2, testData2, ret2)
+    ]).then(check);
+  });
 });

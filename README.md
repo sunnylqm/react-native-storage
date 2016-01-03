@@ -64,7 +64,7 @@ var storage = new Storage({
 // They are perminently stored unless you remove.
 // Even expires, the data won't be removed. Only sync method would be invoked.
 storage.save({
-	key: 'loginState',
+	key: 'loginState',   // Note: Do not use underscore("_") in key!
 	rawData: { 
 		from: 'some other site',
 		userid: 'some userid',
@@ -114,8 +114,8 @@ var userA = {
 };
 
 storage.save({
-	key: 'user',
-	id: '1001',		
+	key: 'user',  // Note: Do not use underscore("_") in key!
+	id: '1001',	  // Note: Do not use underscore("_") in id!	
 	rawData: userA,
 	expires: 1000 * 60	 
 });
