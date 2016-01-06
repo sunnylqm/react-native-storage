@@ -299,7 +299,7 @@ export default class Storage {
 
 function noop() {}
 
-// 兼容旧版本的写法
+// compatible with legacy version promise
 function handlePromise (fn) {
   return new Promise((resolve, reject) => {
     var promise, isPromise;

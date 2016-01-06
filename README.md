@@ -1,7 +1,6 @@
 # react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage)  [![npm version](https://badge.fury.io/js/react-native-storage.svg)](http://badge.fury.io/js/react-native-storage)
 
-This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.    
-You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) for [legacy iOS devices/browsers](http://caniuse.com/#search=promise).
+This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
 查看中文文档[请点击README-CHN.md](README-CHN.md)
 
@@ -12,8 +11,40 @@ You may need a [Promise polyfill](https://github.com/jakearchibald/es6-promise) 
 ## Usage
 
 ### Config
-You need to use [babel](https://babeljs.io/) to enable es6 modules for web development(I'll provide an example in the next version).   
-For React-Native development, you don't have to configure anything(but require react native version >= 0.13) 
+#### For Web
+You need to use [webpack](http://webpack.github.io/) and [babel](https://babeljs.io/) to enable es6 modules for web development.   
+You should add the following lines to your webpack config:  
+
+```javascript
+  // ...
+  externals: {
+    "react-native": {}     // This line is required! Otherwise an error would be thrown.
+  },
+  module: {
+    loaders: [
+      // ...
+        {
+          test: /\.js?$/,
+          include: [
+            //path.join(__dirname, 'your-own-js-files'),      
+            //path.join(__dirname, 'node_modules/some-other-lib-that-needs-babel'),
+            path.join(__dirname, 'node_modules/react-native-storage')
+          ],
+          loader: 'babel',
+          query: {
+            cacheDirectory: true,
+            presets: ['es2015', 'stage-1', 'react'],
+            plugins: ['transform-runtime']
+          }
+        }
+    ]
+  }
+
+```  
+
+#### For React Native
+You don't have to configure anything(but require react native version >= 0.13).
+ 
 
 ### Import
 
@@ -21,7 +52,7 @@ For React-Native development, you don't have to configure anything(but require r
 import Storage from 'react-native-storage';
 ```  
 
-Note: do not use `require('react-native-storage')`, which would cause error in version 0.16.
+Do not use `require('react-native-storage')`, which would cause error in version 0.16.
 
 ### Init
 
@@ -51,12 +82,9 @@ var storage = new Storage({
 
 // for react native
 // global.storage = storage;
-
-// or CMD
-// module.exports = storage;
 ```
 
-### Save & Load
+### Save & Load & Remove
 
 ```js
 // Save something with key only. 
@@ -132,6 +160,20 @@ storage.load({
 	// goes to catch()
 	console.warn(err);
 })
+
+// --------------------------------------------------  
+
+//remove single record
+storage.remove({
+	key: 'lastPage'
+});
+storage.remove({
+	key: 'user'
+	id: '1001'
+});
+
+//!! clear map and remove all key-id data (but keep the key-only data)
+storage.clearMap();
 ```
 
 ### Sync remote data(refresh)
@@ -142,6 +184,8 @@ storage.sync = {
 
 	// The name of the sync method must be the same of the data's key
 	// And the passed params will be an all-in-one object.
+	// You can use promise here. 
+	// Or plain callback function with resolve/reject, like:
 	user(params){
 		let { id, resolve, reject } = params;
 		fetch('user/', {
@@ -157,9 +201,11 @@ storage.sync = {
 					id,
 					rawData: json.user
 				});
+				// Call resolve() when succeed
 				resolve && resolve(json.user);
 			}
 			else{
+				// Call reject() when failed
 				reject && reject('data parse error');
 			}
 		}).catch( err => {
@@ -211,3 +257,11 @@ storage.getBatchDataWithIds({
 There is a notable difference between the two methods except the arguments. **getBatchData** will invoke different sync methods(since the keys may be different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests) once, so you need to implement array query on server end and handle the parameters of sync method properly(cause the id parameter can be a single string or an array of strings).    
 
 ####You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page. 
+
+### Changelog
+__Caution: UPGRADEING MAY DROP ALL KEY-ID DATA (DUE TO MAP STRUCTURE CHANGES)!__
+
+#### 0.0.10  
+1. All methods except remove and clearMap are now totally promisified. Even custom sync methods can be promise. So you can chain them now. 
+2. This version changed map structure, so unfortunately all exsiting key-id data would be dropped after upgrading.
+3. Improved some test cases.

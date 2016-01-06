@@ -3,7 +3,6 @@
 [English version doc here](README.md)
 
 这是一个本地持久存储的封装，可以同时支持react-native(AsyncStorage)和浏览器(localStorage)。ES6语法，promise异步读取，使用jest进行了完整的单元测试。由于代码使用ES6语法编写，因而需要[babel库](http://babeljs.io/docs/setup/#browserify)的支持。
-如果iOS设备或浏览器版本较老（不支持[Promise](http://caniuse.com/#search=promise)）,则还需要一个Promise的[兼容库](https://github.com/jakearchibald/es6-promise)。
 
 ## 安装
   npm install react-native-storage --save
@@ -11,9 +10,39 @@
 
 ## 使用说明
 ### 配置
+### Web开发
+对于Web开发你需要使用[webpack](http://webpack.github.io/)和[babel](https://babeljs.io/)来支持es6模块导入功能。   
+在webpack的配置中添加如下几行：  
 
-对于Web开发你需要使用[babel](https://babeljs.io/)来支持es6模块导入功能。    
-对于React-Native开发，可以无需配置直接使用(但要求0.13或更高版本)。    
+```javascript
+  // ...
+  externals: {
+    "react-native": {}     // 这一行是必须的！否则会报错。
+  },
+  module: {
+    loaders: [
+      // ...
+        {
+          test: /\.js?$/,
+          include: [
+            //path.join(__dirname, '你自己的js文件路径'),      
+            //path.join(__dirname, 'node_modules/其他需要babel的第三方库'),
+            path.join(__dirname, 'node_modules/react-native-storage')
+          ],
+          loader: 'babel',
+          query: {
+            cacheDirectory: true,
+            presets: ['es2015', 'stage-1', 'react'],
+            plugins: ['transform-runtime']
+          }
+        }
+    ]
+  }
+
+```  
+
+#### React Native开发
+无需配置直接使用(但要求0.13或更高版本)。    
 
 ### 导入 
 
@@ -21,7 +50,7 @@
 import Storage from 'react-native-storage';
 ```    
 
-注意:请勿使用`require('react-native-storage')`语法, 否则在react native 0.16版本中会报错.  
+请勿使用`require('react-native-storage')`语法, 否则在react native 0.16版本中会报错.  
 
 ### 初始化
 ```javascript
@@ -44,17 +73,14 @@ var storage = new Storage({
   
 //最好在全局范围内创建一个（且只有一个）storage实例，方便使用
   
-//for web
+//对于web
 //window.storage = storage;
   
-//for react native
+//对于react native
 //global.storage = storage;
-  
-//or CMD
-//module.exports = storage;
 ```
 
-### 保存和读取
+### 保存、读取和删除
 ```javascript
   //使用key来保存数据。这些数据一般是全局独有的，常常需要调用的。
   //除非你手动移除，这些数据会被永久保存，而且默认不会过期。
@@ -129,6 +155,20 @@ var storage = new Storage({
     //或者有其他异常，则在catch中返回
     console.warn(err);
   })
+  
+// --------------------------------------------------  
+
+//删除单个数据
+storage.remove({
+	key: 'lastPage'
+});
+storage.remove({
+	key: 'user'
+	id: '1001'
+});
+
+//!! 清空map，移除所有"key-id"数据（但会保留只有key的数据）
+storage.clearMap();
 ```
 
 ### 同步远程数据（刷新）
@@ -136,6 +176,7 @@ var storage = new Storage({
   storage.sync = {
     //同步方法的名字必须和所存数据的key完全相同
     //方法接受的参数为一整个object，所有参数从object中解构取出
+    //这里可以使用promise。或是使用普通回调函数，但需要调用resolve或reject。
     user(params){
       let { id, resolve, reject } = params;
       fetch('user/', {
@@ -151,9 +192,11 @@ var storage = new Storage({
             id,
             rawData: json.user
           });
+          // 成功则调用resolve
           resolve && resolve(json.user);
         }
         else{
+          // 失败则调用reject
           reject && reject('data parse error');
         }
       }).catch( err => {
@@ -201,3 +244,12 @@ storage.getBatchDataWithIds({
 这两个方法除了参数形式不同，还有个值得注意的差异。**getBatchData**会在数据缺失时挨个调用不同的sync方法(因为key不同)。但是**getBatchDataWithIds**却会把缺失的数据统计起来，将它们的id收集到一个数组中，然后一次传递给对应的sync方法(避免挨个查询导致同时发起大量请求)，所以你需要在服务端实现通过数组来查询返回，还要注意对应的sync方法的参数处理（因为id参数可能是一个字符串，也可能是一个数组的字符串）。
 
 ####如有任何问题，欢迎在[issues](https://github.com/sunnylqm/react-native-storage/issues)页面中提出。
+
+
+### 更新日志
+__注意: 由于新版本可能修改map数据结构，因而升级后可能导致"key-id"数据的丢失！__
+
+#### 0.0.10  
+1. 除了remove和clearMap外的方法已经完全promise化了。甚至自定义的同步方法也可以使用promise。这样你就可以链式调用了。
+2. 这一版本修改了map结构，会导致之前存储的"key-id"数据丢失。
+3. 改进了一部分测试代码。
