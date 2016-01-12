@@ -100,7 +100,7 @@ export default class Storage {
     var promise;
     let me = this;
     let { key, id, rawData, expires } = params;
-    if(key.toString().includes('_')) {
+    if(key.toString().indexOf('_') !== -1) {
       console.error('Please do not use "_" in key!');
     }
     let data = {
@@ -122,7 +122,7 @@ export default class Storage {
       promise = me.setItem(key, data);
     }
     else {
-      if(id.toString().includes('_')) {
+      if(id.toString().indexOf('_') !== -1) {
         console.error('Please do not use "_" in id!');
       }
       promise = me._saveToMap({
