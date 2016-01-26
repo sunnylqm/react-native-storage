@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-01-03
- *  version 0.0.10
+ *  sunnylqm 2016-01-26
+ *  version 0.0.12
  */
 
 export default class Storage {
@@ -27,6 +27,7 @@ export default class Storage {
       }
       catch(e) {
         console.warn(e);
+        delete me._s;
         throw e;
       }
     }
@@ -35,18 +36,29 @@ export default class Storage {
     }
 
     me._mapPromise = me.getItem('map').then( map => {
-      me._m = me._checkMap(JSON.parse(map));
+      me._m = me._checkMap(map && JSON.parse(map) || {});
       delete me._mapPromise;
     });
   }
   getItem(key) {
-    return this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.getItem(key))) : this._s.getItem(key);
+    return this._s
+      ?
+      this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.getItem(key))) : this._s.getItem(key)
+      :
+      Promise.resolve();
   }
   setItem(key, value) {
-    return this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.setItem(key, value))) : this._s.setItem(key, value);
+    return this._s
+      ?
+      this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.setItem(key, value))) : this._s.setItem(key, value)
+      :
+      Promise.resolve();
   }
   removeItem(key) {
-    return this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.removeItem(key))) : this._s.removeItem(key);
+    return this._s
+      ? this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.removeItem(key))) : this._s.removeItem(key)
+      :
+      Promise.resolve();
   }
   _checkMap(map) {
     let me = this;
