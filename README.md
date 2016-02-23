@@ -259,9 +259,12 @@ There is a notable difference between the two methods except the arguments. **ge
 ####You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page. 
 
 ### Changelog
-__Caution: UPGRADEING MAY DROP ALL KEY-ID DATA (DUE TO MAP STRUCTURE CHANGES)!__
+
+#### 0.0.13
+1. Fix bugs in promise chain.
+2. Can be used without any storage backend.(Use in-memory map)
 
 #### 0.0.10  
 1. All methods except remove and clearMap are now totally promisified. Even custom sync methods can be promise. So you can chain them now. 
-2. This version changed map structure, so unfortunately all exsiting key-id data would be dropped after upgrading.
+2. Adjust map structure.
 3. Improved some test cases.
