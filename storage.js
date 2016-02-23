@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
  *  sunnylqm 2016-02-24
- *  version 0.0.13
+ *  version 0.0.14
  */
 
 export default class Storage {
@@ -106,7 +106,6 @@ export default class Storage {
     this.setItem('map', JSON.stringify(m));
   }
   save(params) {
-    var promise;
     let me = this;
     let { key, id, rawData, expires } = params;
     if(key.toString().indexOf('_') !== -1) {
@@ -128,7 +127,7 @@ export default class Storage {
         const cacheData = JSON.parse(data);
         me.cache[key] = cacheData;
       }
-      return this._mapPromise.then(() => me.setItem(key, data));
+      return me.setItem(key, data);
     }
     else {
       if(id.toString().indexOf('_') !== -1) {
@@ -146,14 +145,6 @@ export default class Storage {
     let tasks = [];
     for(let i = 0, query; query = querys[i]; i++) {
       tasks[i] = me.load(query);
-      //let { key, id } = query;
-      //let newId = id === undefined ? key : me._getId(key, id);
-      //if(me.enableCache && me.cache[newId] !== undefined) {
-      //  tasks[i] = me.cache[newId];
-      //}
-      //else {
-      //  tasks[i] = me.load(query);
-      //}
     }
     return Promise.all(tasks);
   }
@@ -163,7 +154,7 @@ export default class Storage {
 
     return Promise.all(
       ids.map((id) => me.load({ key, id, syncInBackground, autoSync: false, batched: true }))
-    ).then((results) => handlePromise((resolve, reject) => me.sync[key]({
+    ).then((results) => new Promise((resolve, reject) => me.sync[key]({
       id: results
         .filter((value) => value.syncId !== undefined)
         .map((value) => value.syncId),
@@ -186,7 +177,7 @@ export default class Storage {
     let { key, ret, autoSync, syncInBackground } = params;
     if(ret === null || ret === undefined) {
       if(autoSync && me.sync[key]) {
-        return handlePromise((resolve, reject) => me.sync[key]({resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
       }
       return Promise.reject();
     }
@@ -199,16 +190,16 @@ export default class Storage {
         me.sync[key]({});
         return Promise.resolve(ret.rawData);
       }
-      return handlePromise((resolve, reject) => me.sync[key]({resolve, reject}));
+      return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
     }
     return Promise.resolve(ret.rawData);
   }
   _noItemFound(params) {
     let me = this;
-    let { key, id, resolve, reject, autoSync } = params;
+    let { key, id, autoSync } = params;
     if(me.sync[key]) {
       if(autoSync) {
-        return handlePromise((resolve, reject) => me.sync[key]({id, resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({id, resolve, reject}));
       }
       return Promise.resolve({ syncId: id });
     }
@@ -216,7 +207,7 @@ export default class Storage {
   }
   _loadMapItem(params) {
     let me = this;
-    let { ret, key, id, resolve, reject, autoSync, batched, syncInBackground } = params;
+    let { ret, key, id, autoSync, batched, syncInBackground } = params;
     if(ret === null || ret === undefined) {
       return me._noItemFound(params);
     }
@@ -230,7 +221,7 @@ export default class Storage {
           me.sync[key]({id});
           return Promise.resolve(ret.rawData);
         }
-        return handlePromise((resolve, reject) => me.sync[key]({id, resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({id, resolve, reject}));
       }
       if(batched) {
         return Promise.resolve({ syncId: id });
@@ -304,12 +295,12 @@ export default class Storage {
   }
 }
 
-function noop() {}
-
-// compatible with legacy version promise
-function handlePromise (fn) {
-  return new Promise((resolve, reject) => {
-    var promise, isPromise;
-    if (isPromise = (promise = fn((data) => isPromise ? noop() : resolve(data), (err) => isPromise ? noop() : reject(err))) instanceof Promise) resolve(promise);
-  });
-}
+// function noop() {}
+//
+// // compatible with legacy version promise
+// function handlePromise (fn) {
+//   return new Promise((resolve, reject) => {
+//     var promise, isPromise;
+//     if (isPromise = (promise = fn((data) => isPromise ? noop() : resolve(data), (err) => isPromise ? noop() : reject(err))) instanceof Promise) resolve(promise);
+//   });
+// }
