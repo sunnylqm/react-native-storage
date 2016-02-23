@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-01-26
- *  version 0.0.12
+ *  sunnylqm 2016-02-24
+ *  version 0.0.13
  */
 
 export default class Storage {
@@ -37,26 +37,26 @@ export default class Storage {
 
     me._mapPromise = me.getItem('map').then( map => {
       me._m = me._checkMap(map && JSON.parse(map) || {});
-      delete me._mapPromise;
+      // delete me._mapPromise;
     });
   }
   getItem(key) {
     return this._s
       ?
-      this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.getItem(key))) : this._s.getItem(key)
+      this.isBrowser ? Promise.resolve(this._s.getItem(key)) : this._s.getItem(key)
       :
       Promise.resolve();
   }
   setItem(key, value) {
     return this._s
       ?
-      this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.setItem(key, value))) : this._s.setItem(key, value)
+      this.isBrowser ? Promise.resolve(this._s.setItem(key, value)) : this._s.setItem(key, value)
       :
       Promise.resolve();
   }
   removeItem(key) {
     return this._s
-      ? this.isBrowser ? new Promise((resolve, reject) => resolve(this._s.removeItem(key))) : this._s.removeItem(key)
+      ? this.isBrowser ? Promise.resolve(this._s.removeItem(key)) : this._s.removeItem(key)
       :
       Promise.resolve();
   }
@@ -76,37 +76,34 @@ export default class Storage {
     return key + '_' + id;
   }
   _saveToMap(params) {
-    var promise = new Promise((resolve, reject) => {
-      let { key, id, data } = params,
-        newId = this._getId(key, id),
-        m = this._m;
-      if(m[newId] !== undefined) {
-        //update existed data
-        if(this.enableCache) this.cache[newId] = JSON.parse(data);
-        return resolve(this.setItem('map_' + m[newId], data));
-      }
-      if(m[m.index] !== undefined){
-        //loop over, delete old data
-        let oldId = m[m.index];
-        delete m[oldId];
-        if(this.enableCache) {
-          delete this.cache[oldId];
-        }
-      }
-      m[newId] = m.index;
-      m[m.index] = newId;
+    let { key, id, data } = params,
+      newId = this._getId(key, id),
+      m = this._m;
+    if(m[newId] !== undefined) {
+      //update existed data
+      if(this.enableCache) this.cache[newId] = JSON.parse(data);
+      return this.setItem('map_' + m[newId], data);
+    }
+    if(m[m.index] !== undefined){
+      //loop over, delete old data
+      let oldId = m[m.index];
+      delete m[oldId];
       if(this.enableCache) {
-        const cacheData = JSON.parse(data);
-        this.cache[newId] = cacheData;
+        delete this.cache[oldId];
       }
-
-      resolve(this.setItem('map_' + m.index, data)
-        .then(this.setItem('map', JSON.stringify(m))));
-      if(++m.index === this._SIZE) {
-        m.index = 0;
-      }
-    });
-    return this._mapPromise ? this._mapPromise.then(() => promise) : promise;
+    }
+    m[newId] = m.index;
+    m[m.index] = newId;
+    if(this.enableCache) {
+      const cacheData = JSON.parse(data);
+      this.cache[newId] = cacheData;
+    }
+    let currentIndex = m.index;
+    if(++m.index === this._SIZE) {
+      m.index = 0;
+    }
+    this.setItem('map_' + currentIndex, data);
+    this.setItem('map', JSON.stringify(m));
   }
   save(params) {
     var promise;
@@ -131,19 +128,18 @@ export default class Storage {
         const cacheData = JSON.parse(data);
         me.cache[key] = cacheData;
       }
-      promise = me.setItem(key, data);
+      return this._mapPromise.then(() => me.setItem(key, data));
     }
     else {
       if(id.toString().indexOf('_') !== -1) {
         console.error('Please do not use "_" in id!');
       }
-      promise = me._saveToMap({
+      return this._mapPromise.then(() => me._saveToMap({
         key,
         id,
         data
-      });
+      }));
     }
-    return this._mapPromise ? this._mapPromise.then(() => promise) : promise;
   }
   getBatchData(querys) {
     let me = this;
@@ -171,8 +167,8 @@ export default class Storage {
       id: results
         .filter((value) => value.syncId !== undefined)
         .map((value) => value.syncId),
-      resolve: resolve,
-      reject: reject
+      resolve,
+      reject
     })).then((data) => results.map((value) => value.syncId ? data.shift() : value)))
   }
   _lookupGlobalItem(params) {
@@ -291,13 +287,12 @@ export default class Storage {
     if(syncInBackground === undefined) {
       syncInBackground = true;
     }
-    let promise = new Promise((resolve, reject) => {
+    return me._mapPromise.then(() => new Promise((resolve, reject) => {
       if(id === undefined) {
         return resolve(me._lookupGlobalItem({key, resolve, reject, autoSync, syncInBackground}));
       }
       return resolve(me._lookUpInMap({key, id, resolve, reject, autoSync, syncInBackground}));
-    });
-    return this._mapPromise ? this._mapPromise.then(() => promise) : promise;
+    }));
   }
   clearMap(){
     let me = this;
