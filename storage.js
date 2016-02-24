@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
  *  sunnylqm 2016-02-24
- *  version 0.0.14
+ *  version 0.0.15
  */
 
 export default class Storage {
@@ -12,27 +12,29 @@ export default class Storage {
     me.sync = options.sync || {};      // remote sync method
     me.defaultExpires = options.defaultExpires || 1000 * 3600 * 24;
     me.enableCache = options.enableCache || true;
+    me._s = options.storageBackend || null;
+    me.isPromise = options.isPromise || true;
     me._innerVersion = 10;
     me.cache = {};
 
-    //detect browser or ios javascriptCore
-    me.isBrowser = false;
-    if(window && window.localStorage) {
-      try {
-        // avoid key conflict
-        window.localStorage.setItem('__react_native_storage_test', 'test');
+    if(!me._s) {
+      if(window && window.localStorage) {
+        try {
+          // avoid key conflict
+          window.localStorage.setItem('__react_native_storage_test', 'test');
 
-        me._s = window.localStorage;
-        me.isBrowser = true;
+          me._s = window.localStorage;
+          me.isPromise = false;
+        }
+        catch(e) {
+          console.warn(e);
+          delete me._s;
+          throw e;
+        }
       }
-      catch(e) {
-        console.warn(e);
-        delete me._s;
-        throw e;
+      else {
+        me._s = require('react-native').AsyncStorage;
       }
-    }
-    else {
-      me._s = require('react-native').AsyncStorage;
     }
 
     me._mapPromise = me.getItem('map').then( map => {
@@ -43,20 +45,20 @@ export default class Storage {
   getItem(key) {
     return this._s
       ?
-      this.isBrowser ? Promise.resolve(this._s.getItem(key)) : this._s.getItem(key)
+      this.isPromise ? this._s.getItem(key) : Promise.resolve(this._s.getItem(key))
       :
       Promise.resolve();
   }
   setItem(key, value) {
     return this._s
       ?
-      this.isBrowser ? Promise.resolve(this._s.setItem(key, value)) : this._s.setItem(key, value)
+      this.isPromise ? this._s.setItem(key, value) : Promise.resolve(this._s.setItem(key, value))
       :
       Promise.resolve();
   }
   removeItem(key) {
     return this._s
-      ? this.isBrowser ? Promise.resolve(this._s.removeItem(key)) : this._s.removeItem(key)
+      ? this.isPromise ? this._s.removeItem(key) : Promise.resolve(this._s.removeItem(key))
       :
       Promise.resolve();
   }
@@ -245,32 +247,33 @@ export default class Storage {
     return me._noItemFound( {ret, ...params } );
   }
   remove(params) {
-    let me = this,
-      m = me._m;
-    let { key, id } = params;
+    return this._mapPromise.then(() => {
+      let me = this,
+        m = me._m;
+      let { key, id } = params;
 
-    if(id === undefined) {
-      if(me.enableCache && me.cache[key]) {
-        delete me.cache[key];
+      if(id === undefined) {
+        if(me.enableCache && me.cache[key]) {
+          delete me.cache[key];
+        }
+        return me.removeItem(key);
       }
-      return me.removeItem(key);
-    }
-    let newId = me._getId(key, id);
+      let newId = me._getId(key, id);
 
-    //remove existed data
-    if(m[newId] !== undefined) {
-      if(me.enableCache && me.cache[newId]) {
-        delete me.cache[newId];
+      //remove existed data
+      if(m[newId] !== undefined) {
+        if(me.enableCache && me.cache[newId]) {
+          delete me.cache[newId];
+        }
+        let idTobeDeleted = m[newId];
+        delete m[newId];
+        me.setItem('map', JSON.stringify(m));
+        return me.removeItem('map_' + idTobeDeleted);
       }
-      let idTobeDeleted = m[newId];
-      delete m[newId];
-      me.setItem('map', JSON.stringify(m));
-      return me.removeItem('map_' + idTobeDeleted);
-    }
+    });
   }
   load(params) {
-    let me = this,
-      m = me._m;
+    let me = this;
     let { key, id, autoSync, syncInBackground } = params;
     if(autoSync === undefined) {
       autoSync = true;

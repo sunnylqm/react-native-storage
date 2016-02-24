@@ -248,7 +248,7 @@ storage.getBatchDataWithIds({
 
 ### 更新日志
 
-#### 0.0.14
+#### 0.0.15
 1. 修复promise链式调用中的bug.
 2. 现在可以在没有任何storage引擎的情况下使用(仅使用内存map)而不会报错
 

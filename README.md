@@ -260,7 +260,7 @@ There is a notable difference between the two methods except the arguments. **ge
 
 ### Changelog
 
-#### 0.0.14
+#### 0.0.15
 1. Fix bugs in promise chain.
 2. Can be used without any storage backend.(Use in-memory map)
 
