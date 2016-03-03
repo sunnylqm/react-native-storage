@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-02-24
- *  version 0.0.15
+ *  sunnylqm 2016-03-03
+ *  version 0.0.16
  */
 
 export default class Storage {
@@ -156,13 +156,23 @@ export default class Storage {
 
     return Promise.all(
       ids.map((id) => me.load({ key, id, syncInBackground, autoSync: false, batched: true }))
-    ).then((results) => new Promise((resolve, reject) => me.sync[key]({
-      id: results
-        .filter((value) => value.syncId !== undefined)
-        .map((value) => value.syncId),
-      resolve,
-      reject
-    })).then((data) => results.map((value) => value.syncId ? data.shift() : value)))
+    ).then((results) => {
+      return new Promise((resolve, reject) => {
+        const ids = results.filter((value) => value.syncId !== undefined);
+        if(!ids.length){
+          return resolve();
+        }
+        return me.sync[key]({
+          id: ids.map((value) => value.syncId),
+          resolve,
+          reject
+        });
+      }).then((data) => {
+        return results.map(value => {
+          return value.syncId ? data.shift() : value
+        });
+      });
+    })
   }
   _lookupGlobalItem(params) {
     let me = this,

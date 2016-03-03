@@ -260,6 +260,9 @@ There is a notable difference between the two methods except the arguments. **ge
 
 ### Changelog
 
+#### 0.0.16
+1. getBatchDataWithIds now won't invoke sync if everything is ready in storage.
+
 #### 0.0.15
 1. Fix bugs in promise chain.
 2. Can be used without any storage backend.(Use in-memory map)
