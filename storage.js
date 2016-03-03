@@ -18,7 +18,7 @@ export default class Storage {
     me.cache = {};
 
     if(!me._s) {
-      if(window && window.localStorage) {
+      if(typeof window !== 'undefined' && window.localStorage) {
         try {
           // avoid key conflict
           window.localStorage.setItem('__react_native_storage_test', 'test');
