@@ -52,7 +52,7 @@ You don't have to configure anything(but require react native version >= 0.13).
 import Storage from 'react-native-storage';
 ```  
 
-Do not use `require('react-native-storage')`, which would cause error in version 0.16.
+Do not use `require('react-native-storage')`, which would cause error in react native version >= 0.16.
 
 ### Init
 

@@ -50,7 +50,7 @@
 import Storage from 'react-native-storage';
 ```    
 
-请勿使用`require('react-native-storage')`语法, 否则在react native 0.16版本中会报错.  
+请勿使用`require('react-native-storage')`语法, 否则在react native 0.16之后的版本中会报错.  
 
 ### 初始化
 ```javascript
