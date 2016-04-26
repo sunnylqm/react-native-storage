@@ -133,4 +133,55 @@ describe('react-native-storage: basic function(promise)', () => {
       expect(ret2[1]).toBe('catched');
     });
   });
+  pit('remove Key-Id data correctly', () =>{
+    let testKey = 'testKey' + Math.random(),
+      testId = 'testId' + Math.random(),
+      testData = 'testData' + Math.random();
+    let ret = [undefined, undefined];
+    let task = (key, id, rawData, retArray) => {
+      return storage.save({
+        key,
+        id,
+        rawData
+      }).then(() => {
+        return storage.load({
+          key,
+          id
+        });
+      }).then( ret => {
+        retArray[0] = ret;
+        storage.clearMapForKey(key);
+      }).then( () => {
+        return storage.load({ key, id });
+      }).then( ret => {
+        retArray[1] = ret;
+      }).catch( () => {
+        retArray[1] = 'catched';
+      });;
+    };
+    return Promise.all([
+      task(testKey, testId, testData, ret)
+    ]).then(() => {
+      expect(ret[0]).toBe(testData);
+      expect(ret[1]).toBe('catched');
+    });
+  })
+
+
+  pit('load ids by key correctly', () => {
+    let key = 'testKey' + Math.random(),
+      testIds = [Math.random(), Math.random(), Math.random()],
+      rawData = 'testData' + Math.random();
+    let ret = [];
+    let tasks = testIds.map(function(id){
+      return storage.save({
+          key,
+          id,
+          rawData
+        });
+    });
+    return Promise.all(tasks).then(() => {
+      expect(storage.getIdsForKey(key)).toEqual(testIds)
+    })
+  });
 });

@@ -18,7 +18,7 @@ export default class Storage {
     me.cache = {};
 
     if(!me._s) {
-      if(window && window.localStorage) {
+      if(typeof window !== 'undefined' && window.localStorage) {
         try {
           // avoid key conflict
           window.localStorage.setItem('__react_native_storage_test', 'test');
@@ -90,8 +90,9 @@ export default class Storage {
     if(m[m.index] !== undefined){
       //loop over, delete old data
       let oldId = m[m.index];
+      let splitOldId = oldId.split('_')
       delete m[oldId];
-      this._removeIdInKey(oldId.split('_')[1])
+      this._removeIdInKey(splitOldId[0], splitOldId[1])
       if(this.enableCache) {
         delete this.cache[oldId];
       }
@@ -326,6 +327,17 @@ export default class Storage {
       me.remove({ key: key, id: id });
     });
   }
+  getIdsForKey(key) {
+    return this._m.__keys__[key] || []
+  }
+  getAllDataForKey(key, options) {
+    options = Object.assign({ syncInBackground: true }, options)
+    let querys = this.getIdsForKey(key).map(function(id){
+      return {key: key, id: id, syncInBackground: options.syncInBackground}
+    })
+    return this.getBatchData(querys)
+  }
+
 }
 
 // function noop() {}
