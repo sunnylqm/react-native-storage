@@ -91,6 +91,7 @@ export default class Storage {
       //loop over, delete old data
       let oldId = m[m.index];
       delete m[oldId];
+      this._removeIdInKey(oldId.split('_')[1])
       if(this.enableCache) {
         delete this.cache[oldId];
       }
@@ -280,12 +281,19 @@ export default class Storage {
         if(me.enableCache && me.cache[newId]) {
           delete me.cache[newId];
         }
+        me._removeIdInKey(key, id)
         let idTobeDeleted = m[newId];
         delete m[newId];
         me.setItem('map', JSON.stringify(m));
         return me.removeItem('map_' + idTobeDeleted);
       }
     });
+  }
+  _removeIdInKey(key, id) {
+    let indexTobeRemoved = this._m.__keys__[key].indexOf(id)
+    if(indexTobeRemoved !== -1) {
+      this._m.__keys__[key].splice(indexTobeRemoved, 1)
+    }
   }
   load(params) {
     let me = this;
@@ -311,14 +319,12 @@ export default class Storage {
       index: 0
     };
   }
-
   clearMapForKey(key) {
     let me = this;
     let m = me._m;
     m.__keys__[key].forEach(function(id){
       me.remove({ key: key, id: id });
     });
-    m.__keys__[key] = []
   }
 }
 
