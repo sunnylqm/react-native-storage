@@ -14,7 +14,7 @@ export default class Storage {
     me.enableCache = options.enableCache || true;
     me._s = options.storageBackend || null;
     me.isPromise = options.isPromise || true;
-    me._innerVersion = 10;
+    me._innerVersion = 11;
     me.cache = {};
 
     if(!me._s) {
@@ -70,7 +70,8 @@ export default class Storage {
     else {
       return {
         innerVersion: me._innerVersion,
-        index: 0
+        index: 0,
+        __keys__: {}
       };
     }
   }
@@ -89,13 +90,19 @@ export default class Storage {
     if(m[m.index] !== undefined){
       //loop over, delete old data
       let oldId = m[m.index];
+      let splitOldId = oldId.split('_')
       delete m[oldId];
+      this._removeIdInKey(splitOldId[0], splitOldId[1])
       if(this.enableCache) {
         delete this.cache[oldId];
       }
     }
     m[newId] = m.index;
     m[m.index] = newId;
+
+    m.__keys__[key] = m.__keys__[key] || [];
+    m.__keys__[key].push(id);
+
     if(this.enableCache) {
       const cacheData = JSON.parse(data);
       this.cache[newId] = cacheData;
@@ -275,12 +282,19 @@ export default class Storage {
         if(me.enableCache && me.cache[newId]) {
           delete me.cache[newId];
         }
+        me._removeIdInKey(key, id)
         let idTobeDeleted = m[newId];
         delete m[newId];
         me.setItem('map', JSON.stringify(m));
         return me.removeItem('map_' + idTobeDeleted);
       }
     });
+  }
+  _removeIdInKey(key, id) {
+    let indexTobeRemoved = this._m.__keys__[key].indexOf(id)
+    if(indexTobeRemoved !== -1) {
+      this._m.__keys__[key].splice(indexTobeRemoved, 1)
+    }
   }
   load(params) {
     let me = this;
@@ -306,6 +320,24 @@ export default class Storage {
       index: 0
     };
   }
+  clearMapForKey(key) {
+    let me = this;
+    let m = me._m;
+    m.__keys__[key].forEach(function(id){
+      me.remove({ key: key, id: id });
+    });
+  }
+  getIdsForKey(key) {
+    return this._m.__keys__[key] || []
+  }
+  getAllDataForKey(key, options) {
+    options = Object.assign({ syncInBackground: true }, options)
+    let querys = this.getIdsForKey(key).map(function(id){
+      return {key: key, id: id, syncInBackground: options.syncInBackground}
+    })
+    return this.getBatchData(querys)
+  }
+
 }
 
 // function noop() {}
