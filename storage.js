@@ -322,10 +322,10 @@ export default class Storage {
   }
   clearMapForKey(key) {
     let me = this;
-    let m = me._m;
-    m.__keys__[key].forEach(function(id){
-      me.remove({ key: key, id: id });
+    let tasks = me._m.__keys__[key].map(function(id){
+      return me.remove({ key: key, id: id });
     });
+    return Promise.all(tasks);
   }
   getIdsForKey(key) {
     return this._m.__keys__[key] || []
