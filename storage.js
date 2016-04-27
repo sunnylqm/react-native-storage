@@ -321,9 +321,8 @@ export default class Storage {
     };
   }
   clearMapForKey(key) {
-    let me = this;
-    let tasks = me._m.__keys__[key].map(function(id){
-      return me.remove({ key: key, id: id });
+    let tasks = this._m.__keys__[key].map((id) =>{
+      return this.remove({ key: key, id: id });
     });
     return Promise.all(tasks);
   }
