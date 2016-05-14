@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>React-native-storage by sunnylqm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">React-native-storage</h1>
+      <h2 class="project-tagline">local storage wrapper for both react-native and browser. Support size controlling, auto expiring, remote data auto syncing and getting batch data in one query.</h2>
+      <a href="https://github.com/sunnylqm/react-native-storage" class="btn">View on GitHub</a>
+      <a href="https://github.com/sunnylqm/react-native-storage/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/sunnylqm/react-native-storage/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="react-native-storage---" class="anchor" href="#react-native-storage---" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>react-native-storage <a href="https://travis-ci.org/sunnylqm/react-native-storage"><img src="https://travis-ci.org/sunnylqm/react-native-storage.svg" alt="Build Status"></a>  <a href="http://badge.fury.io/js/react-native-storage"><img src="https://badge.fury.io/js/react-native-storage.svg" alt="npm version"></a>
+</h1>
+
+<p>This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). <a href="http://babeljs.io/docs/learn-es2015/">ES6</a> syntax, promise for async load, fully tested with jest.</p>
+
+<p>查看中文文档<a href="README-CHN.md">请点击README-CHN.md</a></p>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h2>
+
+<pre><code>npm install react-native-storage --save
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a id="config" class="anchor" href="#config" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Config</h3>
+
+<h4>
+<a id="for-web" class="anchor" href="#for-web" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>For Web</h4>
+
+<p>You need to use <a href="http://webpack.github.io/">webpack</a> and <a href="https://babeljs.io/">babel</a> to enable es6 modules for web development.<br>
+You should add the following lines to your webpack config:  </p>
+
+<div class="highlight highlight-source-js"><pre>  <span class="pl-c">// ...</span>
+  externals<span class="pl-k">:</span> {
+    <span class="pl-s"><span class="pl-pds">"</span>react-native<span class="pl-pds">"</span></span><span class="pl-k">:</span> {}     <span class="pl-c">// This line is required! Otherwise an error would be thrown.</span>
+  },
+  module<span class="pl-k">:</span> {
+    loaders<span class="pl-k">:</span> [
+      <span class="pl-c">// ...</span>
+        {
+          test<span class="pl-k">:</span><span class="pl-sr"> <span class="pl-pds">/</span><span class="pl-cce">\.</span>js<span class="pl-k">?</span><span class="pl-k">$</span><span class="pl-pds">/</span></span>,
+          include<span class="pl-k">:</span> [
+            <span class="pl-c">//path.join(__dirname, 'your-own-js-files'),      </span>
+            <span class="pl-c">//path.join(__dirname, 'node_modules/some-other-lib-that-needs-babel'),</span>
+            <span class="pl-smi">path</span>.<span class="pl-c1">join</span>(<span class="pl-c1">__dirname</span>, <span class="pl-s"><span class="pl-pds">'</span>node_modules/react-native-storage<span class="pl-pds">'</span></span>)
+          ],
+          loader<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>babel<span class="pl-pds">'</span></span>,
+          query<span class="pl-k">:</span> {
+            cacheDirectory<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+            presets<span class="pl-k">:</span> [<span class="pl-s"><span class="pl-pds">'</span>es2015<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>stage-1<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>react<span class="pl-pds">'</span></span>],
+            plugins<span class="pl-k">:</span> [<span class="pl-s"><span class="pl-pds">'</span>transform-runtime<span class="pl-pds">'</span></span>]
+          }
+        }
+    ]
+  }
+</pre></div>
+
+<h4>
+<a id="for-react-native" class="anchor" href="#for-react-native" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>For React Native</h4>
+
+<p>You don't have to configure anything(but require react native version &gt;= 0.13).</p>
+
+<h3>
+<a id="import" class="anchor" href="#import" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Import</h3>
+
+<div class="highlight highlight-source-shell"><pre>import Storage from <span class="pl-s"><span class="pl-pds">'</span>react-native-storage<span class="pl-pds">'</span></span><span class="pl-k">;</span></pre></div>
+
+<p>Do not use <code>require('react-native-storage')</code>, which would cause error in react native version &gt;= 0.16.</p>
+
+<h3>
+<a id="init" class="anchor" href="#init" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Init</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> storage <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Storage</span>({
+    <span class="pl-c">// maximum capacity, default 1000 </span>
+    size<span class="pl-k">:</span> <span class="pl-c1">1000</span>,    
+
+    <span class="pl-c">// expire time, default 1 day(1000 * 3600 * 24 secs)</span>
+    defaultExpires<span class="pl-k">:</span> <span class="pl-c1">1000</span> <span class="pl-k">*</span> <span class="pl-c1">3600</span> <span class="pl-k">*</span> <span class="pl-c1">24</span>,
+
+    <span class="pl-c">// cache data in the memory. default is true.</span>
+    enableCache<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+
+    <span class="pl-c">// if data was not found in storage or expired,</span>
+    <span class="pl-c">// the corresponding sync method will be invoked and return </span>
+    <span class="pl-c">// the latest data.</span>
+    sync <span class="pl-k">:</span> {
+        <span class="pl-c">// we'll talk about the details later.</span>
+    }
+})  
+
+<span class="pl-c">// I suggest you have one(and only one) storage instance in global scope.</span>
+
+<span class="pl-c">// for web</span>
+<span class="pl-c">// window.storage = storage;</span>
+
+<span class="pl-c">// for react native</span>
+<span class="pl-c">// global.storage = storage;</span></pre></div>
+
+<h3>
+<a id="save--load--remove" class="anchor" href="#save--load--remove" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Save &amp; Load &amp; Remove</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// Save something with key only. </span>
+<span class="pl-c">// Something more unique, and constantly being used.</span>
+<span class="pl-c">// They are perminently stored unless you remove.</span>
+<span class="pl-c">// Even expires, the data won't be removed. Only sync method would be invoked.</span>
+<span class="pl-smi">storage</span>.<span class="pl-en">save</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>loginState<span class="pl-pds">'</span></span>,   <span class="pl-c">// Note: Do not use underscore("_") in key!</span>
+    rawData<span class="pl-k">:</span> { 
+        from<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>some other site<span class="pl-pds">'</span></span>,
+        userid<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>some userid<span class="pl-pds">'</span></span>,
+        token<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>some token<span class="pl-pds">'</span></span>
+    },
+
+    <span class="pl-c">// if not specified, the defaultExpires will be applied instead.</span>
+    <span class="pl-c">// if set to null, then it will never expires.</span>
+    expires<span class="pl-k">:</span> <span class="pl-c1">1000</span> <span class="pl-k">*</span> <span class="pl-c1">3600</span>
+});
+
+<span class="pl-c">// load</span>
+<span class="pl-smi">storage</span>.<span class="pl-c1">load</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>loginState<span class="pl-pds">'</span></span>,
+
+    <span class="pl-c">// autoSync(default true) means if data not found or expired,</span>
+    <span class="pl-c">// then invoke the corresponding sync method</span>
+    autoSync<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+
+    <span class="pl-c">// syncInBackground(default true) means if data expired,</span>
+    <span class="pl-c">// return the outdated data first while invoke the sync method.</span>
+    <span class="pl-c">// It can be set to false to always return data provided by sync method when expired.(Of course it's slower)</span>
+    syncInBackground<span class="pl-k">:</span> <span class="pl-c1">true</span>
+}).<span class="pl-en">then</span>( <span class="pl-smi">ret</span> <span class="pl-k">=&gt;</span> {
+    <span class="pl-c">// found data goes to then()</span>
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-smi">ret</span>.<span class="pl-smi">userid</span>);
+}).<span class="pl-en">catch</span>( <span class="pl-smi">err</span> <span class="pl-k">=&gt;</span> {
+    <span class="pl-c">// any exception including data not found </span>
+    <span class="pl-c">// goes to catch()</span>
+    <span class="pl-en">console</span>.<span class="pl-c1">warn</span>(err);
+})
+
+<span class="pl-c">// --------------------------------------------------</span>
+
+<span class="pl-c">// Save something with key and id. Something of the same type(key). </span>
+<span class="pl-c">// There is a quota over "key-id" data(the size parameter you pass in constructor).</span>
+<span class="pl-c">// By default the 1001th data will overwrite the 1st data. </span>
+<span class="pl-c">// If you then load the 1st data, a catch(data not found) or sync will be invoked.</span>
+<span class="pl-k">var</span> userA <span class="pl-k">=</span> {
+    name<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>A<span class="pl-pds">'</span></span>,
+    age<span class="pl-k">:</span> <span class="pl-c1">20</span>,
+    tags<span class="pl-k">:</span> [
+        <span class="pl-s"><span class="pl-pds">'</span>geek<span class="pl-pds">'</span></span>,
+        <span class="pl-s"><span class="pl-pds">'</span>nerd<span class="pl-pds">'</span></span>,
+        <span class="pl-s"><span class="pl-pds">'</span>otaku<span class="pl-pds">'</span></span>
+    ]
+};
+
+<span class="pl-smi">storage</span>.<span class="pl-en">save</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>,  <span class="pl-c">// Note: Do not use underscore("_") in key!</span>
+    id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1001<span class="pl-pds">'</span></span>,   <span class="pl-c">// Note: Do not use underscore("_") in id!    </span>
+    rawData<span class="pl-k">:</span> userA,
+    expires<span class="pl-k">:</span> <span class="pl-c1">1000</span> <span class="pl-k">*</span> <span class="pl-c1">60</span>   
+});
+
+<span class="pl-c">// load</span>
+<span class="pl-smi">storage</span>.<span class="pl-c1">load</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>
+    id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1001<span class="pl-pds">'</span></span>
+}).<span class="pl-en">then</span>( <span class="pl-smi">ret</span> <span class="pl-k">=&gt;</span> {
+    <span class="pl-c">// found data goes to then()</span>
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-smi">ret</span>.<span class="pl-smi">userid</span>);
+}).<span class="pl-en">catch</span>( <span class="pl-smi">err</span> <span class="pl-k">=&gt;</span> {
+    <span class="pl-c">// any exception including data not found </span>
+    <span class="pl-c">// goes to catch()</span>
+    <span class="pl-en">console</span>.<span class="pl-c1">warn</span>(err);
+})
+
+<span class="pl-c">// --------------------------------------------------  </span>
+
+<span class="pl-c">//remove single record</span>
+<span class="pl-smi">storage</span>.<span class="pl-en">remove</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>lastPage<span class="pl-pds">'</span></span>
+});
+<span class="pl-smi">storage</span>.<span class="pl-en">remove</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>
+    id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1001<span class="pl-pds">'</span></span>
+});
+
+<span class="pl-c">//!! clear map and remove all key-id data (but keep the key-only data)</span>
+<span class="pl-smi">storage</span>.<span class="pl-en">clearMap</span>();</pre></div>
+
+<h3>
+<a id="sync-remote-datarefresh" class="anchor" href="#sync-remote-datarefresh" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sync remote data(refresh)</h3>
+
+<p>You can pass sync methods as one object parameter to the storage constructor, but also you can add it any time.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">storage</span>.<span class="pl-smi">sync</span> <span class="pl-k">=</span> {
+
+    <span class="pl-c">// The name of the sync method must be the same of the data's key</span>
+    <span class="pl-c">// And the passed params will be an all-in-one object.</span>
+    <span class="pl-c">// You can use promise here. </span>
+    <span class="pl-c">// Or plain callback function with resolve/reject, like:</span>
+    <span class="pl-en">user</span>(<span class="pl-smi">params</span>){
+        <span class="pl-k">let</span> { id, resolve, reject } <span class="pl-k">=</span> params;
+        <span class="pl-en">fetch</span>(<span class="pl-s"><span class="pl-pds">'</span>user/<span class="pl-pds">'</span></span>, {
+            method<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>GET<span class="pl-pds">'</span></span>,
+            body<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>id=<span class="pl-pds">'</span></span> <span class="pl-k">+</span> id
+        }).<span class="pl-en">then</span>( <span class="pl-smi">response</span> <span class="pl-k">=&gt;</span> {
+            <span class="pl-k">return</span> <span class="pl-smi">response</span>.<span class="pl-en">json</span>();
+        }).<span class="pl-en">then</span>( <span class="pl-smi">json</span> <span class="pl-k">=&gt;</span> {
+            <span class="pl-c">// console.log(json);</span>
+            <span class="pl-k">if</span>(json <span class="pl-k">&amp;&amp;</span> <span class="pl-smi">json</span>.<span class="pl-smi">user</span>){
+                <span class="pl-smi">storage</span>.<span class="pl-en">save</span>({
+                    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>,
+                    id,
+                    rawData<span class="pl-k">:</span> <span class="pl-smi">json</span>.<span class="pl-smi">user</span>
+                });
+                <span class="pl-c">// Call resolve() when succeed</span>
+                resolve <span class="pl-k">&amp;&amp;</span> <span class="pl-en">resolve</span>(<span class="pl-smi">json</span>.<span class="pl-smi">user</span>);
+            }
+            <span class="pl-k">else</span>{
+                <span class="pl-c">// Call reject() when failed</span>
+                reject <span class="pl-k">&amp;&amp;</span> <span class="pl-en">reject</span>(<span class="pl-s"><span class="pl-pds">'</span>data parse error<span class="pl-pds">'</span></span>);
+            }
+        }).<span class="pl-en">catch</span>( <span class="pl-smi">err</span> <span class="pl-k">=&gt;</span> {
+            <span class="pl-en">console</span>.<span class="pl-c1">warn</span>(err);
+            reject <span class="pl-k">&amp;&amp;</span> <span class="pl-en">reject</span>(err);
+        });
+    }
+}</pre></div>
+
+<p>With this example sync method, when you invoke:    </p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">storage</span>.<span class="pl-c1">load</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>,
+    id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1002<span class="pl-pds">'</span></span>
+}).<span class="pl-en">then</span>(<span class="pl-k">...</span>)</pre></div>
+
+<p>If there is no user 1002 stored currently, then storage.sync.user would be invoked to fetch remote data and returned.    </p>
+
+<h3>
+<a id="load-batch-data" class="anchor" href="#load-batch-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Load batch data</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// Load batch data with the same parameters as storage.load, but in an array.</span>
+<span class="pl-c">// It will invoke sync methods on demand, </span>
+<span class="pl-c">// and finally return them all in an ordered array.</span>
+
+<span class="pl-smi">storage</span>.<span class="pl-en">getBatchData</span>([
+    { key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>loginState<span class="pl-pds">'</span></span> },
+    { key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>checkPoint<span class="pl-pds">'</span></span>, syncInBackground<span class="pl-k">:</span> <span class="pl-c1">false</span> },
+    { key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>balance<span class="pl-pds">'</span></span> },
+    { key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>, id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>1009<span class="pl-pds">'</span></span> }
+])
+.<span class="pl-en">then</span>( <span class="pl-smi">results</span> <span class="pl-k">=&gt;</span> {  
+    <span class="pl-smi">results</span>.<span class="pl-en">forEach</span>( <span class="pl-smi">result</span> <span class="pl-k">=&gt;</span> {
+        <span class="pl-en">console</span>.<span class="pl-c1">log</span>(result); 
+    })
+})
+
+<span class="pl-c">// Load batch data with one key and an array of ids.</span>
+<span class="pl-smi">storage</span>.<span class="pl-en">getBatchDataWithIds</span>({
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>, 
+    ids<span class="pl-k">:</span> [<span class="pl-s"><span class="pl-pds">'</span>1001<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>1002<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>1003<span class="pl-pds">'</span></span>]
+})
+.<span class="pl-en">then</span>( <span class="pl-k">...</span> )</pre></div>
+
+<p>There is a notable difference between the two methods except the arguments. <strong>getBatchData</strong> will invoke different sync methods(since the keys may be different) one by one when corresponding data is missing. However, <strong>getBatchDataWithIds</strong> will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests) once, so you need to implement array query on server end and handle the parameters of sync method properly(cause the id parameter can be a single string or an array of strings).    </p>
+
+<h4>
+<a id="you-are-welcome-to-ask-any-question-in-the-issues-page" class="anchor" href="#you-are-welcome-to-ask-any-question-in-the-issues-page" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>You are welcome to ask any question in the <a href="https://github.com/sunnylqm/react-native-storage/issues">issues</a> page.</h4>
+
+<h3>
+<a id="changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changelog</h3>
+
+<h4>
+<a id="0016" class="anchor" href="#0016" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>0.0.16</h4>
+
+<ol>
+<li>getBatchDataWithIds now won't invoke sync if everything is ready in storage.</li>
+</ol>
+
+<h4>
+<a id="0015" class="anchor" href="#0015" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>0.0.15</h4>
+
+<ol>
+<li>Fix bugs in promise chain.</li>
+<li>Can be used without any storage backend.(Use in-memory map)</li>
+</ol>
+
+<h4>
+<a id="0010" class="anchor" href="#0010" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>0.0.10</h4>
+
+<ol>
+<li>All methods except remove and clearMap are now totally promisified. Even custom sync methods can be promise. So you can chain them now. </li>
+<li>Adjust map structure.</li>
+<li>Improved some test cases.</li>
+</ol>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/sunnylqm/react-native-storage">React-native-storage</a> is maintained by <a href="https://github.com/sunnylqm">sunnylqm</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
