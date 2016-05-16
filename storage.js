@@ -204,12 +204,15 @@ export default class Storage {
       ret = JSON.parse(ret);
     }
     let now = new Date().getTime();
-    if(autoSync && ret.expires < now && me.sync[key]) {
-      if(syncInBackground) {
-        me.sync[key]({});
-        return Promise.resolve(ret.rawData);
+    if(autoSync && ret.expires < now) {
+      if (me.sync[key]){
+        if(syncInBackground) {
+          me.sync[key]({});
+          return Promise.resolve(ret.rawData);
+        }
+        return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
       }
-      return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
+      return Promise.reject();
     }
     return Promise.resolve(ret.rawData);
   }
@@ -245,6 +248,7 @@ export default class Storage {
       if(batched) {
         return Promise.resolve({ syncId: id });
       }
+      return Promise.reject();
     }
     return Promise.resolve(ret.rawData);
   }
