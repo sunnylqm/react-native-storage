@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-03-03
- *  version 0.0.16
+ *  sunnylqm 2016-05-27
+ *  version 0.1.0
  */
 
 export default class Storage {
@@ -286,7 +286,7 @@ export default class Storage {
         if(me.enableCache && me.cache[newId]) {
           delete me.cache[newId];
         }
-        me._removeIdInKey(key, id)
+        me._removeIdInKey(key, id);
         let idTobeDeleted = m[newId];
         delete m[newId];
         me.setItem('map', JSON.stringify(m));
@@ -295,9 +295,9 @@ export default class Storage {
     });
   }
   _removeIdInKey(key, id) {
-    let indexTobeRemoved = this._m.__keys__[key].indexOf(id)
+    let indexTobeRemoved = this._m.__keys__[key].indexOf(id);
     if(indexTobeRemoved !== -1) {
-      this._m.__keys__[key].splice(indexTobeRemoved, 1)
+      this._m.__keys__[key].splice(indexTobeRemoved, 1);
     }
   }
   load(params) {
@@ -325,20 +325,22 @@ export default class Storage {
     };
   }
   clearMapForKey(key) {
-    let tasks = this._m.__keys__[key].map((id) =>{
-      return this.remove({ key: key, id: id });
+    return this._mapPromise.then(() => {
+      let tasks = this._m.__keys__[key].map(id => this.remove({ key, id }));
+      return Promise.all(tasks);
     });
-    return Promise.all(tasks);
   }
   getIdsForKey(key) {
-    return this._m.__keys__[key] || []
+    return this._mapPromise.then(() => {
+      return this._m.__keys__[key] || [];
+    });
   }
   getAllDataForKey(key, options) {
-    options = Object.assign({ syncInBackground: true }, options)
-    let querys = this.getIdsForKey(key).map(function(id){
-      return {key: key, id: id, syncInBackground: options.syncInBackground}
-    })
-    return this.getBatchData(querys)
+    options = Object.assign({ syncInBackground: true }, options);
+    return this.getIdsForKey(key).then(ids => {
+      let querys = ids.map(id => ({ key, id, syncInBackground: options.syncInBackground }));
+      return this.getBatchData(querys);
+    });
   }
 
 }

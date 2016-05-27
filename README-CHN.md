@@ -2,7 +2,7 @@
 
 [English version doc here](README.md)
 
-这是一个本地持久存储的封装，可以同时支持react-native(AsyncStorage)和浏览器(localStorage)。ES6语法，promise异步读取，使用jest进行了完整的单元测试。由于代码使用ES6语法编写，因而需要[babel库](http://babeljs.io/docs/setup/#browserify)的支持。
+这是一个本地持久存储的封装，可以同时支持react-native(AsyncStorage)和浏览器(localStorage)。ES6语法，promise异步读取，使用jest进行了完整的单元测试。
 
 ## 安装
   npm install react-native-storage --save
@@ -25,8 +25,8 @@
         {
           test: /\.js?$/,
           include: [
-            //path.join(__dirname, '你自己的js文件路径'),      
-            //path.join(__dirname, 'node_modules/其他需要babel的第三方库'),
+            // path.join(__dirname, '你自己的js文件路径'),
+            // path.join(__dirname, 'node_modules/其他需要babel的第三方库'),
             path.join(__dirname, 'node_modules/react-native-storage')
           ],
           loader: 'babel',
@@ -55,36 +55,37 @@ import Storage from 'react-native-storage';
 ### 初始化
 ```javascript
 var storage = new Storage({
-  //最大容量，默认值1000条数据循环存储
+  // 最大容量，默认值1000条数据循环存储
   size: 1000,    
     
-  //数据过期时间，默认一整天（1000 * 3600 * 24秒）
+  // 数据过期时间，默认一整天（1000 * 3600 * 24秒）
   defaultExpires: 1000 * 3600 * 24,
     
-  //读写时在内存中缓存数据。默认启用。
+  // 读写时在内存中缓存数据。默认启用。
   enableCache: true,
     
-  //如果storage中没有相应数据，或数据已过期，
-  //则会调用相应的sync同步方法，无缝返回最新数据。
+  // 如果storage中没有相应数据，或数据已过期，
+  // 则会调用相应的sync同步方法，无缝返回最新数据。
   sync : {
-    //同步方法的具体说明会在后文提到
+    // 同步方法的具体说明会在后文提到
   }
 })  
   
-//最好在全局范围内创建一个（且只有一个）storage实例，方便使用
+// 最好在全局范围内创建一个（且只有一个）storage实例，方便直接调用
   
-//对于web
-//window.storage = storage;
+// 对于web
+// window.storage = storage;
   
-//对于react native
-//global.storage = storage;
+// 对于react native
+// global.storage = storage;
+
+// 这样在之后的任意位置即可以直接调用storage
 ```
 
 ### 保存、读取和删除
 ```javascript
-  //使用key来保存数据。这些数据一般是全局独有的，常常需要调用的。
-  //除非你手动移除，这些数据会被永久保存，而且默认不会过期。
-  //即便指定了且达到了过期时间，数据也不会被删除，而只是触发调用同步方法。
+  // 使用key来保存数据。这些数据一般是全局独有的，常常需要调用的。
+  // 除非你手动移除，这些数据会被永久保存，而且默认不会过期。
   storage.save({
     key: 'loginState',  //注意:请不要在key中使用_下划线符号!
     rawData: { 
@@ -93,8 +94,8 @@ var storage = new Storage({
       token: 'some token'
     },
     
-    //如果不指定过期时间，则会使用defaultExpires参数
-    //如果设为null，则永不过期
+    // 如果不指定过期时间，则会使用defaultExpires参数
+    // 如果设为null，则永不过期
     expires: 1000 * 3600
   });
   
@@ -102,17 +103,17 @@ var storage = new Storage({
   storage.load({
     key: 'loginState',
     
-    //autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的同步方法
+    // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的同步方法
     autoSync: true,
     
-    //syncInBackground(默认为true)意味着如果数据过期，
-    //在调用同步方法的同时先返回已经过期的数据。
-    //设置为false的话，则始终强制返回同步方法提供的最新数据(当然会需要更多等待时间)。
+    // syncInBackground(默认为true)意味着如果数据过期，
+    // 在调用同步方法的同时先返回已经过期的数据。
+    // 设置为false的话，则始终强制返回同步方法提供的最新数据(当然会需要更多等待时间)。
     syncInBackground: true
-  }).then( ret => {
+  }).then(ret => {
     //如果找到数据，则在then方法中返回
     console.log(ret.userid);
-  }).catch( err => {
+  }).catch(err => {
     //如果没有找到数据且没有同步方法，
     //或者有其他异常，则在catch中返回
     console.warn(err);
@@ -122,10 +123,10 @@ var storage = new Storage({
 ---  
   
 ```javascript  
-  //使用key和id来保存数据，一般是保存同类别（key）的大量数据。
-  //这些"key-id"数据有一个保存上限，即在初始化storage时传入的size参数。
-  //在默认上限参数下，第1001个数据会覆盖第1个数据。
-  //覆盖之后，再读取第1个数据，会返回catch或是相应的同步方法。
+  // 使用key和id来保存数据，一般是保存同类别（key）的大量数据。
+  // 这些"key-id"数据有一个保存上限，即在初始化storage时传入的size参数。
+  // 在默认上限参数下，第1001个数据会覆盖第1个数据。
+  // 覆盖之后，再读取第1个数据，会返回catch或是相应的同步方法。
   var userA = {
     name: 'A',
     age: 20,
@@ -137,8 +138,8 @@ var storage = new Storage({
   };
 
   storage.save({
-    key: 'user',  //注意:请不要在key中使用_下划线符号!
-    id: '1001',   //注意:请不要在id中使用_下划线符号!
+    key: 'user',  // 注意:请不要在key中使用_下划线符号!
+    id: '1001',   // 注意:请不要在id中使用_下划线符号!
     rawData: userA,
     expires: 1000 * 60   
   });
@@ -147,18 +148,33 @@ var storage = new Storage({
   storage.load({
     key: 'user'
     id: '1001'
-  }).then( ret => {
-    //如果找到数据，则在then方法中返回
+  }).then(ret => {
+    // 如果找到数据，则在then方法中返回
     console.log(ret.userid);
-  }).catch( err => {          
-    //如果没有找到数据且没有同步方法，
-    //或者有其他异常，则在catch中返回
+  }).catch(err => {
+    // 如果没有找到数据且没有同步方法，
+    // 或者有其他异常，则在catch中返回
     console.warn(err);
   })
-  
+
+// --------------------------------------------------
+
+// 获取某个key下的所有id
+storage.getIdsForKey('user').then(ids => {
+    console.log(ids);
+});
+
+// 获取某个key下的所有数据
+storage.getAllDataForKey('user').then(users => {
+    console.log(users);
+});
+
+// !! 清除某个key下的所有数据
+storage.clearMapForKey('user');
+
 // --------------------------------------------------  
 
-//删除单个数据
+// 删除单个数据
 storage.remove({
 	key: 'lastPage'
 });
@@ -167,7 +183,7 @@ storage.remove({
 	id: '1001'
 });
 
-//!! 清空map，移除所有"key-id"数据（但会保留只有key的数据）
+// !! 清空map，移除所有"key-id"数据（但会保留只有key的数据）
 storage.clearMap();
 ```
 
@@ -182,9 +198,9 @@ storage.clearMap();
       fetch('user/', {
         method: 'GET',
         body: 'id=' + id
-      }).then( response => {
+      }).then(response => {
         return response.json();
-      }).then( json => {
+      }).then(json => {
         //console.log(json);
         if(json && json.user){
           storage.save({
@@ -199,7 +215,7 @@ storage.clearMap();
           // 失败则调用reject
           reject && reject('data parse error');
         }
-      }).catch( err => {
+      }).catch(err => {
         console.warn(err);
         reject && reject(err);
       });
@@ -219,15 +235,15 @@ storage.clearMap();
 
 ### 读取批量数据
 ```javascript
-//使用和load方法一样的参数读取批量数据，但是参数是以数组的方式提供。
-//会在需要时分别调用相应的同步方法，最后统一返回一个有序数组。
+// 使用和load方法一样的参数读取批量数据，但是参数是以数组的方式提供。
+// 会在需要时分别调用相应的同步方法，最后统一返回一个有序数组。
 storage.getBatchData([
 	{ key: 'loginState' },
 	{ key: 'checkPoint', syncInBackground: false },
 	{ key: 'balance' },
 	{ key: 'user', id: '1009' }
 ])
-.then( results => {  
+.then(results => {
   results.forEach( result => {
     console.log(result); 	
   })
@@ -243,10 +259,15 @@ storage.getBatchDataWithIds({
   
 这两个方法除了参数形式不同，还有个值得注意的差异。**getBatchData**会在数据缺失时挨个调用不同的sync方法(因为key不同)。但是**getBatchDataWithIds**却会把缺失的数据统计起来，将它们的id收集到一个数组中，然后一次传递给对应的sync方法(避免挨个查询导致同时发起大量请求)，所以你需要在服务端实现通过数组来查询返回，还要注意对应的sync方法的参数处理（因为id参数可能是一个字符串，也可能是一个数组的字符串）。
 
-####如有任何问题，欢迎在[issues](https://github.com/sunnylqm/react-native-storage/issues)页面中提出。
+#### 如有任何问题，欢迎在[issues](https://github.com/sunnylqm/react-native-storage/issues)页面中提出。
 
 
 ### 更新日志
+
+#### 0.1.0
+1. 添加getIdsForKey、getAllDataForKey、clearMapForKey方法
+2、修复了一些过期的逻辑
+3、重构了单元测试代码
 
 #### 0.0.16
 1. getBatchDataWithIds现在不会在本地数据齐全的情况下触发sync方法了

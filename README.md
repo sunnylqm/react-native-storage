@@ -26,8 +26,8 @@ You should add the following lines to your webpack config:
         {
           test: /\.js?$/,
           include: [
-            //path.join(__dirname, 'your-own-js-files'),      
-            //path.join(__dirname, 'node_modules/some-other-lib-that-needs-babel'),
+            // path.join(__dirname, 'your-own-js-files'),
+            // path.join(__dirname, 'node_modules/some-other-lib-that-needs-babel'),
             path.join(__dirname, 'node_modules/react-native-storage')
           ],
           loader: 'babel',
@@ -90,7 +90,6 @@ var storage = new Storage({
 // Save something with key only. 
 // Something more unique, and constantly being used.
 // They are perminently stored unless you remove.
-// Even expires, the data won't be removed. Only sync method would be invoked.
 storage.save({
 	key: 'loginState',   // Note: Do not use underscore("_") in key!
 	rawData: { 
@@ -116,10 +115,10 @@ storage.load({
 	// return the outdated data first while invoke the sync method.
 	// It can be set to false to always return data provided by sync method when expired.(Of course it's slower)
 	syncInBackground: true
-}).then( ret => {
+}).then(ret => {
 	// found data goes to then()
 	console.log(ret.userid);
-}).catch( err => {
+}).catch(err => {
 	// any exception including data not found 
 	// goes to catch()
 	console.warn(err);
@@ -152,18 +151,34 @@ storage.save({
 storage.load({
 	key: 'user'
 	id: '1001'
-}).then( ret => {
+}).then(ret => {
 	// found data goes to then()
 	console.log(ret.userid);
-}).catch( err => {
+}).catch(err => {
 	// any exception including data not found 
 	// goes to catch()
 	console.warn(err);
-})
+});
+
+// --------------------------------------------------
+
+// getIdsForKey
+storage.getIdsForKey('user').then(ids => {
+    console.log(ids);
+});
+
+// getAllDataForKey
+storage.getAllDataForKey('user').then(users => {
+    console.log(users);
+});
+
+// !! clear all data under a key
+storage.clearMapForKey('user');
+
 
 // --------------------------------------------------  
 
-//remove single record
+// remove single record
 storage.remove({
 	key: 'lastPage'
 });
@@ -172,7 +187,7 @@ storage.remove({
 	id: '1001'
 });
 
-//!! clear map and remove all key-id data (but keep the key-only data)
+// !! clear map and remove all key-id data (but keep the key-only data)
 storage.clearMap();
 ```
 
@@ -191,9 +206,9 @@ storage.sync = {
 		fetch('user/', {
 			method: 'GET',
 			body: 'id=' + id
-		}).then( response => {
+		}).then(response => {
 			return response.json();
-		}).then( json => {
+		}).then(json => {
 			// console.log(json);
 			if(json && json.user){
 				storage.save({
@@ -208,7 +223,7 @@ storage.sync = {
 				// Call reject() when failed
 				reject && reject('data parse error');
 			}
-		}).catch( err => {
+		}).catch(err => {
 			console.warn(err);
 			reject && reject(err);
 		});
@@ -240,8 +255,8 @@ storage.getBatchData([
 	{ key: 'balance' },
 	{ key: 'user', id: '1009' }
 ])
-.then( results => {  
-	results.forEach( result => {
+.then(results => {
+	results.forEach(result => {
 		console.log(result); 
 	})
 })
@@ -254,11 +269,17 @@ storage.getBatchDataWithIds({
 .then( ... )
 ```
 
-There is a notable difference between the two methods except the arguments. **getBatchData** will invoke different sync methods(since the keys may be different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests) once, so you need to implement array query on server end and handle the parameters of sync method properly(cause the id parameter can be a single string or an array of strings).    
+There is a notable difference between the two methods except the arguments. **getBatchData** will invoke different sync methods(since the keys may be different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests) once, so you need to implement array query on server end and handle the parameters of sync method properly(cause the id parameter can be a single string or an array of strings).
 
-####You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page. 
+
+#### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.1.0
+1. add getIdsForKey, getAllDataForKey, clearMapForKey methods
+2、fix some expires logic
+3、refactor unit tests
 
 #### 0.0.16
 1. getBatchDataWithIds now won't invoke sync if everything is ready in storage.
