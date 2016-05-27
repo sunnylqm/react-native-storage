@@ -278,8 +278,8 @@ There is a notable difference between the two methods except the arguments. **ge
 
 #### 0.1.0
 1. add getIdsForKey, getAllDataForKey, clearMapForKey methods
-2、fix some expires logic
-3、refactor unit tests
+2. fix some expires logic
+3. refactor unit tests
 
 #### 0.0.16
 1. getBatchDataWithIds now won't invoke sync if everything is ready in storage.

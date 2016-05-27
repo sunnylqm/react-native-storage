@@ -266,8 +266,8 @@ storage.getBatchDataWithIds({
 
 #### 0.1.0
 1. 添加getIdsForKey、getAllDataForKey、clearMapForKey方法
-2、修复了一些过期的逻辑
-3、重构了单元测试代码
+2. 修复了一些过期的逻辑
+3. 重构了单元测试代码
 
 #### 0.0.16
 1. getBatchDataWithIds现在不会在本地数据齐全的情况下触发sync方法了
