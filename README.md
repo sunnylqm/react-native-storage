@@ -61,7 +61,8 @@ var storage = new Storage({
 	// maximum capacity, default 1000 
 	size: 1000,    
 	
-	// expire time, default 1 day(1000 * 3600 * 24 secs)
+	// expire time, default 1 day(1000 * 3600 * 24 secs).
+	// can be null, which means never expire.
 	defaultExpires: 1000 * 3600 * 24,
 	
 	// cache data in the memory. default is true.
@@ -99,7 +100,7 @@ storage.save({
 	},
 	
 	// if not specified, the defaultExpires will be applied instead.
-	// if set to null, then it will never expires.
+	// if set to null, then it will never expire.
 	expires: 1000 * 3600
 });
 
@@ -275,6 +276,9 @@ There is a notable difference between the two methods except the arguments. **ge
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.1.1
+1. `defaultExpires` can be `null` now, which means never expire.
 
 #### 0.1.0
 1. add getIdsForKey, getAllDataForKey, clearMapForKey methods

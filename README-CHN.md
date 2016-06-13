@@ -58,7 +58,7 @@ var storage = new Storage({
   // 最大容量，默认值1000条数据循环存储
   size: 1000,    
     
-  // 数据过期时间，默认一整天（1000 * 3600 * 24秒）
+  // 数据过期时间，默认一整天（1000 * 3600 * 24秒），设为null则永不过期
   defaultExpires: 1000 * 3600 * 24,
     
   // 读写时在内存中缓存数据。默认启用。
@@ -263,6 +263,9 @@ storage.getBatchDataWithIds({
 
 
 ### 更新日志
+
+#### 0.1.1
+1. `defaultExpires`现在可以设为`null`了，也就是默认永不过期。
 
 #### 0.1.0
 1. 添加getIdsForKey、getAllDataForKey、clearMapForKey方法
