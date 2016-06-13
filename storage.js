@@ -10,7 +10,8 @@ export default class Storage {
 
     me._SIZE = options.size || 1000;   // maximum capacity
     me.sync = options.sync || {};      // remote sync method
-    me.defaultExpires = options.defaultExpires || 1000 * 3600 * 24;
+    me.defaultExpires = options.defaultExpires !== undefined ?
+      options.defaultExpires || 1000 * 3600 * 24;
     me.enableCache = options.enableCache || true;
     me._s = options.storageBackend || null;
     me.isPromise = options.isPromise || true;
