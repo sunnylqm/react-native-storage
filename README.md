@@ -150,7 +150,7 @@ storage.save({
 
 // load
 storage.load({
-	key: 'user'
+	key: 'user',
 	id: '1001'
 }).then(ret => {
 	// found data goes to then()
