@@ -61,7 +61,7 @@ var storage = new Storage({
 	// maximum capacity, default 1000 
 	size: 1000,    
 	
-	// expire time, default 1 day(1000 * 3600 * 24 secs).
+	// expire time, default 1 day(1000 * 3600 * 24 milliseconds).
 	// can be null, which means never expire.
 	defaultExpires: 1000 * 3600 * 24,
 	
