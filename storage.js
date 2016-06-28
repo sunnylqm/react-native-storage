@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-05-27
- *  version 0.1.0
+ *  sunnylqm 2016-06-28
+ *  version 0.1.2
  */
 
 export default class Storage {
@@ -199,7 +199,7 @@ export default class Storage {
       if(autoSync && me.sync[key]) {
         return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
       }
-      return Promise.reject();
+      return Promise.reject(new Error('Not found! Params: ' + JSON.stringify(params)));
     }
     if(typeof ret === 'string') {
       ret = JSON.parse(ret);
@@ -213,7 +213,7 @@ export default class Storage {
         }
         return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
       }
-      return Promise.reject();
+      return Promise.reject(new Error('Not found! Params: ' + JSON.stringify(params)));
     }
     return Promise.resolve(ret.rawData);
   }
@@ -226,7 +226,7 @@ export default class Storage {
       }
       return Promise.resolve({ syncId: id });
     }
-    return Promise.reject();
+    return Promise.reject(new Error('Not found! Params: ' + JSON.stringify(params)));
   }
   _loadMapItem(params) {
     let me = this;
@@ -249,7 +249,7 @@ export default class Storage {
       if(batched) {
         return Promise.resolve({ syncId: id });
       }
-      return Promise.reject();
+      return Promise.reject(new Error('Not found! Params:' + JSON.stringify(params)));
     }
     return Promise.resolve(ret.rawData);
   }

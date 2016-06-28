@@ -213,7 +213,7 @@ storage.clearMap();
         }
         else{
           // 失败则调用reject
-          reject && reject('data parse error');
+          reject && reject(new Error('data parse error'));
         }
       }).catch(err => {
         console.warn(err);
@@ -263,6 +263,9 @@ storage.getBatchDataWithIds({
 
 
 ### 更新日志
+
+#### 0.1.2
+1. 现在load方法找不到数据时，会正确抛出Error对象而非undefined。
 
 #### 0.1.1
 1. `defaultExpires`现在可以设为`null`了，也就是默认永不过期。

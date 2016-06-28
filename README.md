@@ -222,7 +222,7 @@ storage.sync = {
 			}
 			else{
 				// Call reject() when failed
-				reject && reject('data parse error');
+				reject && reject(new Error('data parse error'));
 			}
 		}).catch(err => {
 			console.warn(err);
@@ -276,6 +276,9 @@ There is a notable difference between the two methods except the arguments. **ge
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.1.2
+1. Now when load() failed to find data, it will throw an Error with message instead of undefined.
 
 #### 0.1.1
 1. `defaultExpires` can be `null` now, which means never expire.
