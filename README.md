@@ -184,7 +184,7 @@ storage.remove({
 	key: 'lastPage'
 });
 storage.remove({
-	key: 'user'
+	key: 'user',
 	id: '1001'
 });
 

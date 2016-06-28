@@ -58,7 +58,7 @@ var storage = new Storage({
   // 最大容量，默认值1000条数据循环存储
   size: 1000,    
     
-  // 数据过期时间，默认一整天（1000 * 3600 * 24秒），设为null则永不过期
+  // 数据过期时间，默认一整天（1000 * 3600 * 24 毫秒），设为null则永不过期
   defaultExpires: 1000 * 3600 * 24,
     
   // 读写时在内存中缓存数据。默认启用。
@@ -146,7 +146,7 @@ var storage = new Storage({
   
   //load 读取
   storage.load({
-    key: 'user'
+    key: 'user',
     id: '1001'
   }).then(ret => {
     // 如果找到数据，则在then方法中返回
@@ -179,7 +179,7 @@ storage.remove({
 	key: 'lastPage'
 });
 storage.remove({
-	key: 'user'
+	key: 'user',
 	id: '1001'
 });
 
