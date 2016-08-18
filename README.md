@@ -90,7 +90,7 @@ var storage = new Storage({
 ```js
 // Save something with key only. 
 // Something more unique, and constantly being used.
-// They are perminently stored unless you remove.
+// They are permanently stored unless you remove.
 storage.save({
 	key: 'loginState',   // Note: Do not use underscore("_") in key!
 	rawData: { 
