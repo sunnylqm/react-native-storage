@@ -5,13 +5,13 @@ const SIZE = 10,
   DEFAULTEXPIRES = 1000 * 3600;
 let localStorage = new Storage({
   size: SIZE,
-  defaultExpires: DEFAULTEXPIRES
+  defaultExpires: DEFAULTEXPIRES,
+  storageBackend: window.localStorage
 });
 let asyncStorage = new Storage({
   size: SIZE,
   defaultExpires: DEFAULTEXPIRES,
-  storageBackend: window.asyncStorage,
-  isPromise: true
+  storageBackend: window.asyncStorage
 });
 let stores = { localStorage, asyncStorage };
 

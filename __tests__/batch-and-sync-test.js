@@ -5,10 +5,11 @@ jest.dontMock('../storage.js');
 
 let Storage = require('../storage.js');
 let storage = new Storage();
-let localStorage = new Storage();
+let localStorage = new Storage({
+  storageBackend: window.localStorage
+});
 let asyncStorage = new Storage({
-  storageBackend: window.asyncStorage,
-  isPromise: true
+  storageBackend: window.asyncStorage
 });
 let stores = { localStorage, asyncStorage };
 

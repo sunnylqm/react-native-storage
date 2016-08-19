@@ -17,9 +17,6 @@ You should add the following lines to your webpack config:
 
 ```javascript
   // ...
-  externals: {
-    "react-native": {}     // This line is required! Otherwise an error would be thrown.
-  },
   module: {
     loaders: [
       // ...
@@ -57,9 +54,15 @@ Do not use `require('react-native-storage')`, which would cause error in react n
 ### Init
 
 ```js
+import { AsyncStorage } from 'react-native';
+
 var storage = new Storage({
 	// maximum capacity, default 1000 
-	size: 1000,    
+	size: 1000,
+
+	// Use AsyncStorage for RN, or window.localStorage for web.
+	// If not set, data would be lost after reload.
+	storageBackend: AsyncStorage,
 	
 	// expire time, default 1 day(1000 * 3600 * 24 milliseconds).
 	// can be null, which means never expire.
@@ -276,6 +279,9 @@ There is a notable difference between the two methods except the arguments. **ge
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.1.3
+1. Now you need to specify storageBackend(AsyncStorage or window.localStorage), otherwise the data would not be persisted.
 
 #### 0.1.2
 1. Now when load() failed to find data, it will throw an Error with message instead of undefined.

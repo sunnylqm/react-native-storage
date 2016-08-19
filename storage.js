@@ -1,7 +1,7 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-06-28
- *  version 0.1.2
+ *  sunnylqm 2016-08-19
+ *  version 0.1.3
  */
 
 export default class Storage {
@@ -14,28 +14,22 @@ export default class Storage {
       options.defaultExpires : 1000 * 3600 * 24;
     me.enableCache = options.enableCache || true;
     me._s = options.storageBackend || null;
-    me.isPromise = options.isPromise || true;
     me._innerVersion = 11;
     me.cache = {};
 
-    if(!me._s) {
-      if(typeof window !== 'undefined' && window.localStorage) {
-        try {
-          // avoid key conflict
-          window.localStorage.setItem('__react_native_storage_test', 'test');
-
-          me._s = window.localStorage;
-          me.isPromise = false;
-        }
-        catch(e) {
-          console.warn(e);
-          delete me._s;
-          throw e;
-        }
+    if (me._s && me._s.setItem) {
+      try {
+        var promiseTest = me._s.setItem('__react_native_storage_test', 'test');
+        me.isPromise = (promiseTest && promiseTest.then) ? true : false;
       }
-      else {
-        me._s = require('react-native').AsyncStorage;
+      catch (e) {
+        console.warn(e);
+        delete me._s;
+        throw e;
       }
+    } else {
+      console.warn(`Data would be lost after reload cause there is no storageBackend specified! 
+      \nEither use localStorage(for web) or AsyncStorage(for React Native) as a storageBackend.`)
     }
 
     me._mapPromise = me.getItem('map').then( map => {
