@@ -12,7 +12,7 @@ export default class Storage {
     me.sync = options.sync || {};      // remote sync method
     me.defaultExpires = options.defaultExpires !== undefined ?
       options.defaultExpires : 1000 * 3600 * 24;
-    me.enableCache = options.enableCache || true;
+    me.enableCache = options.enableCache !== false;
     me._s = options.storageBackend || null;
     me._innerVersion = 11;
     me.cache = {};
@@ -28,7 +28,7 @@ export default class Storage {
         throw e;
       }
     } else {
-      console.warn(`Data would be lost after reload cause there is no storageBackend specified! 
+      console.warn(`Data would be lost after reload cause there is no storageBackend specified!
       \nEither use localStorage(for web) or AsyncStorage(for React Native) as a storageBackend.`)
     }
 
