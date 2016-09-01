@@ -120,7 +120,7 @@ var storage = new Storage({
   }).catch(err => {
     //如果没有找到数据且没有同步方法，
     //或者有其他异常，则在catch中返回
-    console.warn(err);
+	console.warn(err.message);
 	switch (err.name) {
 	    case 'NotFoundError':
 	        // TODO;
@@ -166,7 +166,7 @@ var storage = new Storage({
   }).catch(err => {
     // 如果没有找到数据且没有同步方法，
     // 或者有其他异常，则在catch中返回
-    console.warn(err);
+	console.warn(err.message);
 	switch (err.name) {
 	    case 'NotFoundError':
 	        // TODO;

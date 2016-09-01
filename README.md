@@ -169,7 +169,7 @@ storage.load({
 }).catch(err => {
 	// any exception including data not found 
 	// goes to catch()
-	console.warn(err);
+	console.warn(err.message);
 	switch (err.name) {
 	    case 'NotFoundError':
 	        // TODO;
