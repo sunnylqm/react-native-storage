@@ -1,8 +1,9 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2016-08-19
- *  version 0.1.3
+ *  sunnylqm 2016-09-01
+ *  version 0.1.4
  */
+import { NotFoundError, ExpiredError } from './error';
 
 export default class Storage {
   constructor(options = {}) {
@@ -193,21 +194,24 @@ export default class Storage {
       if(autoSync && me.sync[key]) {
         return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
       }
-      return Promise.reject(new Error('Not found! Params: ' + JSON.stringify(params)));
+      return Promise.reject(new NotFoundError(JSON.stringify(params)));
     }
-    if(typeof ret === 'string') {
+    if (typeof ret === 'string') {
       ret = JSON.parse(ret);
+      if (this.enableCache) {
+        this.cache[key] = ret;
+      }
     }
     let now = new Date().getTime();
-    if(autoSync && ret.expires < now) {
-      if (me.sync[key]){
+    if(ret.expires < now) {
+      if (autoSync && me.sync[key]){
         if(syncInBackground) {
           me.sync[key]({});
           return Promise.resolve(ret.rawData);
         }
         return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
       }
-      return Promise.reject(new Error('Not found! Params: ' + JSON.stringify(params)));
+      return Promise.reject(new ExpiredError(JSON.stringify(params)));
     }
     return Promise.resolve(ret.rawData);
   }
@@ -220,7 +224,7 @@ export default class Storage {
       }
       return Promise.resolve({ syncId: id });
     }
-    return Promise.reject(new Error('Not found! Params: ' + JSON.stringify(params)));
+    return Promise.reject(new NotFoundError(JSON.stringify(params)));
   }
   _loadMapItem(params) {
     let me = this;
@@ -230,11 +234,16 @@ export default class Storage {
     }
     if(typeof ret === 'string'){
       ret = JSON.parse(ret);
+      const { key, id } = params;
+      const newId = me._getId(key, id);
+      if (this.enableCache) {
+        this.cache[newId] = ret;
+      }
     }
     let now = new Date().getTime();
-    if(autoSync && ret.expires < now) {
-      if(me.sync[key]) {
-        if(syncInBackground){
+    if(ret.expires < now) {
+      if(autoSync && me.sync[key]) {
+        if(syncInBackground) {
           me.sync[key]({id});
           return Promise.resolve(ret.rawData);
         }
@@ -243,7 +252,7 @@ export default class Storage {
       if(batched) {
         return Promise.resolve({ syncId: id });
       }
-      return Promise.reject(new Error('Not found! Params:' + JSON.stringify(params)));
+      return Promise.reject(new ExpiredError(JSON.stringify(params)));
     }
     return Promise.resolve(ret.rawData);
   }
@@ -339,13 +348,3 @@ export default class Storage {
   }
 
 }
-
-// function noop() {}
-//
-// // compatible with legacy version promise
-// function handlePromise (fn) {
-//   return new Promise((resolve, reject) => {
-//     var promise, isPromise;
-//     if (isPromise = (promise = fn((data) => isPromise ? noop() : resolve(data), (err) => isPromise ? noop() : reject(err))) instanceof Promise) resolve(promise);
-//   });
-// }

@@ -120,12 +120,20 @@ storage.load({
 	// It can be set to false to always return data provided by sync method when expired.(Of course it's slower)
 	syncInBackground: true
 }).then(ret => {
-	// found data goes to then()
+	// found data go to then()
 	console.log(ret.userid);
 }).catch(err => {
 	// any exception including data not found 
 	// goes to catch()
-	console.warn(err);
+	console.warn(err.message);
+	switch (err.name) {
+	    case 'NotFoundError':
+	        // TODO;
+	        break;
+        case 'ExpiredError':
+            // TODO
+            break;
+	}
 })
 
 // --------------------------------------------------
@@ -133,7 +141,7 @@ storage.load({
 // Save something with key and id. Something of the same type(key). 
 // There is a quota over "key-id" data(the size parameter you pass in constructor).
 // By default the 1001th data will overwrite the 1st data. 
-// If you then load the 1st data, a catch(data not found) or sync will be invoked.
+// If you then load the 1st data, a catch(NotFoundError) or sync will be invoked.
 var userA = {
 	name: 'A',
 	age: 20,
@@ -162,6 +170,14 @@ storage.load({
 	// any exception including data not found 
 	// goes to catch()
 	console.warn(err);
+	switch (err.name) {
+	    case 'NotFoundError':
+	        // TODO;
+	        break;
+        case 'ExpiredError':
+            // TODO
+            break;
+	}
 });
 
 // --------------------------------------------------
@@ -279,6 +295,10 @@ There is a notable difference between the two methods except the arguments. **ge
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.1.4
+1. Now you can check error type (NotFoundError and ExpiredError) in catch
+2. Optimize cache strategy
 
 #### 0.1.3
 1. Now you need to specify storageBackend(AsyncStorage or window.localStorage), otherwise the data would not be persisted.

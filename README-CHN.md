@@ -121,6 +121,14 @@ var storage = new Storage({
     //如果没有找到数据且没有同步方法，
     //或者有其他异常，则在catch中返回
     console.warn(err);
+	switch (err.name) {
+	    case 'NotFoundError':
+	        // TODO;
+	        break;
+        case 'ExpiredError':
+            // TODO
+            break;
+	}
   })
 ```
   
@@ -159,6 +167,14 @@ var storage = new Storage({
     // 如果没有找到数据且没有同步方法，
     // 或者有其他异常，则在catch中返回
     console.warn(err);
+	switch (err.name) {
+	    case 'NotFoundError':
+	        // TODO;
+	        break;
+        case 'ExpiredError':
+            // TODO
+            break;
+	}
   })
 
 // --------------------------------------------------
@@ -267,6 +283,10 @@ storage.getBatchDataWithIds({
 
 
 ### 更新日志
+
+#### 0.1.4
+1. 细化错误类别
+2. 优化缓存逻辑
 
 #### 0.1.3
 1. 现在需要在初始化时指定存储引擎(AsyncStorage或window.localStorage)，否则数据不会持久保存。

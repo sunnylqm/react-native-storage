@@ -1,6 +1,7 @@
 /**
  * Created by sunny on 15/10/5.
  */
+jest.dontMock('../error.js');
 jest.dontMock('../storage.js');
 
 let Storage = require('../storage.js');

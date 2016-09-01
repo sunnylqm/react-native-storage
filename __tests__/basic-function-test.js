@@ -1,3 +1,4 @@
+jest.dontMock('../error.js');
 jest.dontMock('../storage.js');
 
 let Storage = require('../storage.js');
@@ -78,28 +79,29 @@ describe('react-native-storage: basic function', () => {
       let testKey1 = 'testKey' + Math.random(),
         testKey2 = 'testKey' + Math.random(),
         testId2 = 'testId' + Math.random();
-      let ret1, ret2, reject1, reject2;
+      let ret1, ret2, error1, error2;
       let tasks = [
         storage.load({
           key: testKey1
         }).then(ret => {
           ret1 = ret;
-        }).catch(() => {
-          reject1 = true;
+        }).catch(e => {
+          error1 = e;
         }),
         storage.load({
           key: testKey2,
           id: testId2
         }).then(ret => {
           ret2 = ret;
-        }).catch(() => {
-          reject2 = true;
+        }).catch(e => {
+          error2 = e;
         })
       ];
       return Promise.all(tasks).then(() => {
         expect(ret1).toBeUndefined();
         expect(ret2).toBeUndefined();
-        expect(reject1 && reject2).toBe(true);
+        expect(error1.name).toBe('NotFoundError');
+        expect(error2.name).toBe('NotFoundError');
       });
     });
 
@@ -114,7 +116,7 @@ describe('react-native-storage: basic function', () => {
         testId2 = 'testId' + Math.random(),
         testData1 = 'testData1' + Math.random(),
         testData2 = 'testData2' + Math.random();
-      let ret1, ret2, reject1, reject2;
+      let ret1, ret2, error1, error2;
       let tasks = [
         storage.save({
           key: testKey1,
@@ -126,8 +128,8 @@ describe('react-native-storage: basic function', () => {
           })
         ).then(ret => {
           ret1 = ret;
-        }).catch(() => {
-          reject1 = true;
+        }).catch(e => {
+          error1 = e;
         }),
         storage.save({
           key: testKey2,
@@ -141,14 +143,15 @@ describe('react-native-storage: basic function', () => {
           })
         ).then(ret => {
           ret2 = ret;
-        }).catch(() => {
-          reject2 = true;
+        }).catch(e => {
+          error2 = e;
         }),
       ];
       return Promise.all(tasks).then(() => {
         expect(ret1).toBeUndefined();
         expect(ret2).toBeUndefined();
-        expect(reject1 && reject2).toBe(true);
+        expect(error1.name).toBe('ExpiredError');
+        expect(error2.name).toBe('ExpiredError');
         Date.prototype.getTime = originGetTime;
       });
     });
