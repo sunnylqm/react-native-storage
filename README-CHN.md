@@ -86,6 +86,8 @@ var storage = new Storage({
 // 这样在之后的任意位置即可以直接调用storage
 ```
 
+不了解全局变量的使用？请点这里 https://github.com/sunnylqm/react-native-storage/issues/29
+
 ### 保存、读取和删除
 ```javascript
   // 使用key来保存数据。这些数据一般是全局独有的，常常需要调用的。
