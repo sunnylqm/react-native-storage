@@ -69,10 +69,12 @@ var storage = new Storage({
   enableCache: true,
     
   // 如果storage中没有相应数据，或数据已过期，
-  // 则会调用相应的sync同步方法，无缝返回最新数据。
-  sync: {
-    // 同步方法的具体说明会在后文提到
-  }
+  // 则会调用相应的sync方法，无缝返回最新数据。
+  // sync方法的具体说明会在后文提到
+  // 你可以在构造函数这里就写好sync的方法
+  // 或是写到另一个文件里，这里require引入
+  // 或是在任何时候，直接对storage.sync进行赋值修改
+  sync: require('./sync')
 })  
   
 // 最好在全局范围内创建一个（且只有一个）storage实例，方便直接调用
@@ -83,7 +85,10 @@ var storage = new Storage({
 // 对于react native
 // global.storage = storage;
 
-// 这样在之后的任意位置即可以直接调用storage
+// 这样，在此**之后**的任意位置即可以直接调用storage
+// 注意：全局变量一定是先声明，后使用
+// 如果你在某处调用storage报错未定义
+// 请检查global.storage = storage语句是否确实已经执行过了
 ```
 
 不了解全局变量的使用？请点这里 https://github.com/sunnylqm/react-native-storage/issues/29
@@ -93,7 +98,7 @@ var storage = new Storage({
   // 使用key来保存数据。这些数据一般是全局独有的，常常需要调用的。
   // 除非你手动移除，这些数据会被永久保存，而且默认不会过期。
   storage.save({
-    key: 'loginState',  //注意:请不要在key中使用_下划线符号!
+    key: 'loginState',  // 注意:请不要在key中使用_下划线符号!
     rawData: { 
       from: 'some other site',
       userid: 'some userid',
@@ -109,18 +114,25 @@ var storage = new Storage({
   storage.load({
     key: 'loginState',
     
-    // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的同步方法
+    // autoSync(默认为true)意味着在没有找到数据或数据过期时自动调用相应的sync方法
     autoSync: true,
     
     // syncInBackground(默认为true)意味着如果数据过期，
-    // 在调用同步方法的同时先返回已经过期的数据。
-    // 设置为false的话，则始终强制返回同步方法提供的最新数据(当然会需要更多等待时间)。
+    // 在调用sync方法的同时先返回已经过期的数据。
+    // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
     syncInBackground: true
   }).then(ret => {
-    //如果找到数据，则在then方法中返回
+    // 如果找到数据，则在then方法中返回
+    // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
+    // 你只能在then这个方法内继续处理ret数据
+    // 而不能在then以外处理
+    // 也没有办法“变成”同步返回
+    // 你也可以使用“看似”同步的async/await语法
+    
     console.log(ret.userid);
+    this.setState({ user: ret });
   }).catch(err => {
-    //如果没有找到数据且没有同步方法，
+    //如果没有找到数据且没有sync方法，
     //或者有其他异常，则在catch中返回
 	console.warn(err.message);
 	switch (err.name) {
@@ -140,7 +152,7 @@ var storage = new Storage({
   // 使用key和id来保存数据，一般是保存同类别（key）的大量数据。
   // 这些"key-id"数据有一个保存上限，即在初始化storage时传入的size参数。
   // 在默认上限参数下，第1001个数据会覆盖第1个数据。
-  // 覆盖之后，再读取第1个数据，会返回catch或是相应的同步方法。
+  // 覆盖之后，再读取第1个数据，会返回catch或是相应的sync方法。
   var userA = {
     name: 'A',
     age: 20,
@@ -166,7 +178,7 @@ var storage = new Storage({
     // 如果找到数据，则在then方法中返回
     console.log(ret.userid);
   }).catch(err => {
-    // 如果没有找到数据且没有同步方法，
+    // 如果没有找到数据且没有sync方法，
     // 或者有其他异常，则在catch中返回
 	console.warn(err.message);
 	switch (err.name) {
@@ -212,9 +224,9 @@ storage.clearMap();
 ### 同步远程数据（刷新）
 ```javascript
   storage.sync = {
-    //同步方法的名字必须和所存数据的key完全相同
-    //方法接受的参数为一整个object，所有参数从object中解构取出
-    //这里可以使用promise。或是使用普通回调函数，但需要调用resolve或reject。
+    // sync方法的名字必须和所存数据的key完全相同
+    // 方法接受的参数为一整个object，所有参数从object中解构取出
+    // 这里可以使用promise。或是使用普通回调函数，但需要调用resolve或reject。
     user(params){
       let { id, resolve, reject } = params;
       fetch('user/', {
@@ -258,7 +270,7 @@ storage.clearMap();
 ### 读取批量数据
 ```javascript
 // 使用和load方法一样的参数读取批量数据，但是参数是以数组的方式提供。
-// 会在需要时分别调用相应的同步方法，最后统一返回一个有序数组。
+// 会在需要时分别调用相应的sync方法，最后统一返回一个有序数组。
 storage.getBatchData([
 	{ key: 'loginState' },
 	{ key: 'checkPoint', syncInBackground: false },
