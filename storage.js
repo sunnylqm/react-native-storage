@@ -33,7 +33,7 @@ export default class Storage {
       \nEither use localStorage(for web) or AsyncStorage(for React Native) as a storageBackend.`)
     }
 
-    me._mapPromise = me.getItem('map').then( map => {
+    me._mapPromise = me.getItem('map').then(map => {
       me._m = me._checkMap(map && JSON.parse(map) || {});
       // delete me._mapPromise;
     });
@@ -58,17 +58,19 @@ export default class Storage {
       :
       Promise.resolve();
   }
+  _initMap() {
+    return {
+      innerVersion: this._innerVersion,
+      index: 0,
+      __keys__: {}
+    };
+  }
   _checkMap(map) {
-    let me = this;
-    if(map && map.innerVersion && map.innerVersion === me._innerVersion ) {
+    if(map && map.innerVersion && map.innerVersion === this._innerVersion ) {
       return map;
     }
     else {
-      return {
-        innerVersion: me._innerVersion,
-        index: 0,
-        __keys__: {}
-      };
+      return this._initMap();
     }
   }
   _getId(key, id) {
@@ -113,14 +115,14 @@ export default class Storage {
   save(params) {
     let me = this;
     let { key, id, rawData, expires } = params;
-    if(key.toString().indexOf('_') !== -1) {
+    if (key.toString().indexOf('_') !== -1) {
       console.error('Please do not use "_" in key!');
     }
     let data = {
       rawData
     };
     let now = new Date().getTime();
-    if(expires === undefined) {
+    if (expires === undefined) {
       expires = me.defaultExpires;
     }
     if(expires !== null) {
@@ -300,7 +302,7 @@ export default class Storage {
   }
   _removeIdInKey(key, id) {
     let indexTobeRemoved = this._m.__keys__[key].indexOf(id);
-    if(indexTobeRemoved !== -1) {
+    if (indexTobeRemoved !== -1) {
       this._m.__keys__[key].splice(indexTobeRemoved, 1);
     }
   }
@@ -320,13 +322,10 @@ export default class Storage {
       return resolve(me._lookUpInMap({key, id, resolve, reject, autoSync, syncInBackground}));
     }));
   }
-  clearMap(){
-    let me = this;
-    me.removeItem('map');
-    me._m = {
-      innerVersion: me._innerVersion,
-      index: 0
-    };
+  clearMap() {
+    this.removeItem('map').then(() => {
+      this._m = this._initMap();
+    });
   }
   clearMapForKey(key) {
     return this._mapPromise.then(() => {

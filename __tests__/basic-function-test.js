@@ -254,7 +254,7 @@ describe('react-native-storage: basic function', () => {
       });
     });
 
-    pit('get all data for key correctly' + `(${storageKey})`, () =>{
+    pit('gets all data for key correctly' + `(${storageKey})`, () => {
       let key = 'testKey' + Math.random(),
         testIds = [Math.random(), Math.random(), Math.random()],
         testDatas = [Math.random(), Math.random(), Math.random()];
@@ -273,8 +273,37 @@ describe('react-native-storage: basic function', () => {
       });
     });
 
+    pit('removes all data for key correctly' + `(${storageKey})`, () => {
+      let key = 'testKey' + Math.random(),
+        testIds = [Math.random(), Math.random(), Math.random()],
+        testDatas = [Math.random(), Math.random(), Math.random()];
+      let ret;
+      return Promise.all(
+        testIds.map((id, i) => storage.save({
+            key,
+            id,
+            rawData: testDatas[i]
+          }))
+        )
+        .then(() => {
+          return storage.clearMapForKey(key);
+        })
+        .then(() => {
+          return storage.getAllDataForKey(key);
+        })
+        .then(realRet => {
+          ret = realRet;
+        })
+        .catch(() => {
+          ret = undefined;
+        })
+        .then(() => {
+          expect(Array.isArray(ret)).toBe(true);
+          expect(ret.length).toBe(0);
+        });
+    });
 
-    pit('load ids by key correctly' + `(${storageKey})`, () => {
+    pit('loads ids by key correctly' + `(${storageKey})`, () => {
       let key = 'testKey' + Math.random(),
         testIds = [Math.random(), Math.random(), Math.random()],
         rawData = 'testData' + Math.random();
