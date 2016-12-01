@@ -150,7 +150,8 @@ var storage = new Storage({
   
 ```javascript  
   // 使用key和id来保存数据，一般是保存同类别（key）的大量数据。
-  // 这些"key-id"数据有一个保存上限，即在初始化storage时传入的size参数。
+  // 所有这些"key-id"数据共有一个保存上限（无论是否相同key）
+  // 即在初始化storage时传入的size参数。
   // 在默认上限参数下，第1001个数据会覆盖第1个数据。
   // 覆盖之后，再读取第1个数据，会返回catch或是相应的sync方法。
   var userA = {
