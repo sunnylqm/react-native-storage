@@ -191,7 +191,7 @@ export default class Storage {
   }
   _loadGlobalItem(params) {
     let me = this;
-    let { key, ret, autoSync, syncInBackground } = params;
+    let { key, ret, autoSync, syncInBackground, loaderConfig } = params;
     if(ret === null || ret === undefined) {
       if(autoSync && me.sync[key]) {
         return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
@@ -219,10 +219,10 @@ export default class Storage {
   }
   _noItemFound(params) {
     let me = this;
-    let { key, id, autoSync } = params;
+    let { key, id, autoSync, loaderConfig } = params;
     if(me.sync[key]) {
       if(autoSync) {
-        return new Promise((resolve, reject) => me.sync[key]({id, resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({id, loaderConfig, resolve, reject}));
       }
       return Promise.resolve({ syncId: id });
     }
@@ -308,18 +308,21 @@ export default class Storage {
   }
   load(params) {
     let me = this;
-    let { key, id, autoSync, syncInBackground } = params;
+    let { key, id, autoSync, syncInBackground, loaderConfig } = params;
     if(autoSync === undefined) {
       autoSync = true;
     }
     if(syncInBackground === undefined) {
       syncInBackground = true;
     }
+    if(loaderConfig === undefined) {
+      loaderConfig = {};
+    }
     return me._mapPromise.then(() => new Promise((resolve, reject) => {
       if(id === undefined) {
-        return resolve(me._lookupGlobalItem({key, resolve, reject, autoSync, syncInBackground}));
+        return resolve(me._lookupGlobalItem({key, resolve, reject, autoSync, syncInBackground, loaderConfig}));
       }
-      return resolve(me._lookUpInMap({key, id, resolve, reject, autoSync, syncInBackground}));
+      return resolve(me._lookUpInMap({key, id, resolve, reject, autoSync, syncInBackground, loaderConfig}));
     }));
   }
   clearMap() {
