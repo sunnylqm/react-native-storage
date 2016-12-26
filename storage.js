@@ -191,10 +191,10 @@ export default class Storage {
   }
   _loadGlobalItem(params) {
     let me = this;
-    let { key, ret, autoSync, syncInBackground } = params;
+    let { key, ret, autoSync, syncInBackground, syncParams } = params;
     if(ret === null || ret === undefined) {
       if(autoSync && me.sync[key]) {
-        return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({resolve, reject, syncParams}));
       }
       return Promise.reject(new NotFoundError(JSON.stringify(params)));
     }
@@ -208,10 +208,10 @@ export default class Storage {
     if(ret.expires < now) {
       if (autoSync && me.sync[key]){
         if(syncInBackground) {
-          me.sync[key]({});
+          me.sync[key]({syncParams});
           return Promise.resolve(ret.rawData);
         }
-        return new Promise((resolve, reject) => me.sync[key]({resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({resolve, reject, syncParams}));
       }
       return Promise.reject(new ExpiredError(JSON.stringify(params)));
     }
@@ -219,10 +219,10 @@ export default class Storage {
   }
   _noItemFound(params) {
     let me = this;
-    let { key, id, autoSync } = params;
+    let { key, id, autoSync, syncParams } = params;
     if(me.sync[key]) {
       if(autoSync) {
-        return new Promise((resolve, reject) => me.sync[key]({id, resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({id, syncParams, resolve, reject}));
       }
       return Promise.resolve({ syncId: id });
     }
@@ -230,7 +230,7 @@ export default class Storage {
   }
   _loadMapItem(params) {
     let me = this;
-    let { ret, key, id, autoSync, batched, syncInBackground } = params;
+    let { ret, key, id, autoSync, batched, syncInBackground, syncParams } = params;
     if(ret === null || ret === undefined) {
       return me._noItemFound(params);
     }
@@ -246,10 +246,10 @@ export default class Storage {
     if(ret.expires < now) {
       if(autoSync && me.sync[key]) {
         if(syncInBackground) {
-          me.sync[key]({id});
+          me.sync[key]({id, syncParams});
           return Promise.resolve(ret.rawData);
         }
-        return new Promise((resolve, reject) => me.sync[key]({id, resolve, reject}));
+        return new Promise((resolve, reject) => me.sync[key]({id, resolve, reject, syncParams}));
       }
       if(batched) {
         return Promise.resolve({ syncId: id });
@@ -308,18 +308,12 @@ export default class Storage {
   }
   load(params) {
     let me = this;
-    let { key, id, autoSync, syncInBackground } = params;
-    if(autoSync === undefined) {
-      autoSync = true;
-    }
-    if(syncInBackground === undefined) {
-      syncInBackground = true;
-    }
+    let { key, id, autoSync = true, syncInBackground = true, syncParams } = params;
     return me._mapPromise.then(() => new Promise((resolve, reject) => {
       if(id === undefined) {
-        return resolve(me._lookupGlobalItem({key, resolve, reject, autoSync, syncInBackground}));
+        return resolve(me._lookupGlobalItem({resolve, reject, autoSync, syncInBackground, syncParams}));
       }
-      return resolve(me._lookUpInMap({key, id, resolve, reject, autoSync, syncInBackground}));
+      return resolve(me._lookUpInMap({key, id, resolve, reject, autoSync, syncInBackground, syncParams}));
     }));
   }
   clearMap() {
