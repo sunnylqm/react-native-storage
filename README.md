@@ -118,7 +118,16 @@ storage.load({
 	// syncInBackground(default true) means if data expired,
 	// return the outdated data first while invoke the sync method.
 	// It can be set to false to always return data provided by sync method when expired.(Of course it's slower)
-	syncInBackground: true
+	syncInBackground: true,
+	
+	// you can pass extra params to sync method
+	// see sync example below for example
+	syncParams: {
+	  extraFetchOptions: {
+	    // blahblah
+	  },
+	  someFlag: true,
+	},
 }).then(ret => {
 	// found data go to then()
 	console.log(ret.userid);
@@ -222,10 +231,11 @@ storage.sync = {
 	// You can use promise here. 
 	// Or plain callback function with resolve/reject, like:
 	user(params){
-		let { id, resolve, reject } = params;
+		let { id, resolve, reject, syncParams: { extraFetchOptions, someFlag } } = params;
 		fetch('user/', {
 			method: 'GET',
-			body: 'id=' + id
+			body: 'id=' + id,
+		    ...extraFetchOptions,
 		}).then(response => {
 			return response.json();
 		}).then(json => {
@@ -236,6 +246,11 @@ storage.sync = {
 					id,
 					rawData: json.user
 				});
+				
+				if (someFlag) {
+				  // do something for this extra param
+				}
+				
 				// Call resolve() when succeed
 				resolve && resolve(json.user);
 			}
@@ -295,6 +310,10 @@ There is a notable difference between the two methods except the arguments. **ge
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.1.5
+1. Now you can pass extra params to sync method.
+2. Fix clearMap
 
 #### 0.1.4
 1. Now you can check error type (NotFoundError and ExpiredError) in catch

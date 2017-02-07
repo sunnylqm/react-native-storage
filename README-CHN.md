@@ -120,7 +120,15 @@ var storage = new Storage({
     // syncInBackground(默认为true)意味着如果数据过期，
     // 在调用sync方法的同时先返回已经过期的数据。
     // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
-    syncInBackground: true
+    syncInBackground: true,
+    
+	// 你还可以给sync方法传递额外的参数
+	syncParams: {
+	  extraFetchOptions: {
+	    // 各种参数
+	  },
+	  someFlag: true,
+	},
   }).then(ret => {
     // 如果找到数据，则在then方法中返回
     // 注意：这是异步返回的结果（不了解异步请自行搜索学习）
@@ -229,10 +237,11 @@ storage.clearMap();
     // 方法接受的参数为一整个object，所有参数从object中解构取出
     // 这里可以使用promise。或是使用普通回调函数，但需要调用resolve或reject。
     user(params){
-      let { id, resolve, reject } = params;
+	  let { id, resolve, reject, syncParams: { extraFetchOptions, someFlag } } = params;
       fetch('user/', {
         method: 'GET',
-        body: 'id=' + id
+        body: 'id=' + id,
+        ...extraFetchOptions,
       }).then(response => {
         return response.json();
       }).then(json => {
@@ -243,6 +252,11 @@ storage.clearMap();
             id,
             rawData: json.user
           });
+          
+          if (someFlag) {
+            // 根据syncParams中的额外参数做对应处理
+          }
+          
           // 成功则调用resolve
           resolve && resolve(json.user);
         }
