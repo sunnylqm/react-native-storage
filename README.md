@@ -96,7 +96,7 @@ var storage = new Storage({
 // They are permanently stored unless you remove.
 storage.save({
 	key: 'loginState',   // Note: Do not use underscore("_") in key!
-	rawData: { 
+	data: { 
 		from: 'some other site',
 		userid: 'some userid',
 		token: 'some token'
@@ -164,7 +164,7 @@ var userA = {
 storage.save({
 	key: 'user',  // Note: Do not use underscore("_") in key!
 	id: '1001',	  // Note: Do not use underscore("_") in id!	
-	rawData: userA,
+	data: userA,
 	expires: 1000 * 60	 
 });
 
@@ -244,7 +244,7 @@ storage.sync = {
 				storage.save({
 					key: 'user',
 					id,
-					rawData: json.user
+					data: json.user
 				});
 				
 				if (someFlag) {
@@ -310,6 +310,10 @@ There is a notable difference between the two methods except the arguments. **ge
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
 
 ### Changelog
+
+#### 0.2.0
+1. `rawData` is now deprecated, use "data" instead!
+2. Upgrade jest to 19.0.0
 
 #### 0.1.5
 1. Now you can pass extra params to sync method.

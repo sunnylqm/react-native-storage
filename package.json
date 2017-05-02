@@ -1,6 +1,6 @@
 {
   "name": "react-native-storage",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). Support size controlling, auto expiring, remote data auto syncing and getting batch data in one query.",
   "main": "storage.js",
   "scripts": {
@@ -9,8 +9,9 @@
   "jest": {
     "verbose": true,
     "bail": true,
-    "scriptPreprocessor": "node_modules/babel-jest",
-    "setupEnvScriptFile": "jestSupport/mockStorage.js"
+    "setupFiles": [
+      "./jestSupport/mockStorage.js"
+    ]
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,9 @@
   },
   "homepage": "https://github.com/sunnylqm/react-native-storage#readme",
   "devDependencies": {
-    "babel-jest": "^5.3.0",
-    "jest-cli": "^0.8.0"
+    "babel-jest": "^19.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "jest": "^19.0.2"
   }
 }

@@ -99,7 +99,7 @@ var storage = new Storage({
   // 除非你手动移除，这些数据会被永久保存，而且默认不会过期。
   storage.save({
     key: 'loginState',  // 注意:请不要在key中使用_下划线符号!
-    rawData: { 
+    data: { 
       from: 'some other site',
       userid: 'some userid',
       token: 'some token'
@@ -175,7 +175,7 @@ var storage = new Storage({
   storage.save({
     key: 'user',  // 注意:请不要在key中使用_下划线符号!
     id: '1001',   // 注意:请不要在id中使用_下划线符号!
-    rawData: userA,
+    data: userA,
     expires: 1000 * 60   
   });
   
@@ -250,7 +250,7 @@ storage.clearMap();
           storage.save({
             key: 'user',
             id,
-            rawData: json.user
+            data: json.user
           });
           
           if (someFlag) {
@@ -312,6 +312,10 @@ storage.getBatchDataWithIds({
 
 
 ### 更新日志
+
+#### 0.2.0
+1. `rawData`参数已弃用，请使用`data`参数
+2. jest版本升级到19.0.0
 
 #### 0.1.5
 1. 现在可以给sync方法传递额外参数
