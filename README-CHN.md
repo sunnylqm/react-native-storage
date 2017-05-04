@@ -74,7 +74,7 @@ var storage = new Storage({
   // 你可以在构造函数这里就写好sync的方法
   // 或是写到另一个文件里，这里require引入
   // 或是在任何时候，直接对storage.sync进行赋值修改
-  sync: require('./sync')
+  sync: require('./sync')  // 这个sync文件是要你自己写的
 })  
   
 // 最好在全局范围内创建一个（且只有一个）storage实例，方便直接调用
