@@ -1,6 +1,7 @@
 .tmp
 .gitignore
 .nvmrc
+.babelrc
 webpack*
 __tests__
 jestSupport
