@@ -294,7 +294,7 @@ export default class Storage {
     });
   }
   _removeIdInKey(key, id) {
-    let indexTobeRemoved = this._m.__keys__[key].indexOf(id);
+    let indexTobeRemoved = (this._m.__keys__[key] || []).indexOf(id);
     if (indexTobeRemoved !== -1) {
       this._m.__keys__[key].splice(indexTobeRemoved, 1);
     }
@@ -319,7 +319,7 @@ export default class Storage {
   }
   clearMapForKey(key) {
     return this._mapPromise.then(() => {
-      let tasks = this._m.__keys__[key].map(id => this.remove({ key, id }));
+      let tasks = (this._m.__keys__[key] || []).map(id => this.remove({ key, id }));
       return Promise.all(tasks);
     });
   }
