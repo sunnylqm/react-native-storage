@@ -237,7 +237,7 @@ storage.clearMap();
     // 方法接受的参数为一整个object，所有参数从object中解构取出
     // 这里可以使用promise。或是使用普通回调函数，但需要调用resolve或reject。
     user(params){
-	  let { id, resolve, reject, syncParams: { extraFetchOptions, someFlag } } = params;
+      let { id, resolve, reject, syncParams: { extraFetchOptions, someFlag } } = params;
       fetch('user/', {
         method: 'GET',
         body: 'id=' + id,
