@@ -51,7 +51,7 @@ import Storage from 'react-native-storage';
 
 ### 初始化
 ```javascript
-
+import Storage from 'react-native-storage';
 import { AsyncStorage } from 'react-native';
 
 var storage = new Storage({
