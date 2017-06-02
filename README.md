@@ -311,6 +311,9 @@ There is a notable difference between the two methods except the arguments. **ge
 
 ### Changelog
 
+#### 0.2.2
+1. check key availability in clearMapForKey
+
 #### 0.2.0
 1. `rawData` is now deprecated, use "data" instead!
 2. Upgrade jest to 19.0.0

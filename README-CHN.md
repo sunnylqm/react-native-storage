@@ -313,6 +313,9 @@ storage.getBatchDataWithIds({
 
 ### 更新日志
 
+#### 0.2.2
+1. 在clearMapForKey中检查key是否存在
+
 #### 0.2.0
 1. `rawData`参数已弃用，请使用`data`参数
 2. jest版本升级到19.0.0
