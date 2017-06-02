@@ -54,6 +54,7 @@ Do not use `require('react-native-storage')`, which would cause error in react n
 ### Init
 
 ```js
+import Storage from 'react-native-storage';
 import { AsyncStorage } from 'react-native';
 
 var storage = new Storage({
