@@ -119,7 +119,7 @@ var storage = new Storage({
     
     // syncInBackground(默认为true)意味着如果数据过期，
     // 在调用sync方法的同时先返回已经过期的数据。
-    // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
+    // 设置为false的话，则等待sync方法提供的最新数据(当然会需要更多时间)。
     syncInBackground: true,
     
     // 你还可以给sync方法传递额外的参数
