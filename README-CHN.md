@@ -203,17 +203,17 @@ var storage = new Storage({
 
 // --------------------------------------------------
 
-// 获取某个key下的所有id
+// 获取某个key下的所有id(仅key-id数据)
 storage.getIdsForKey('user').then(ids => {
     console.log(ids);
 });
 
-// 获取某个key下的所有数据
+// 获取某个key下的所有数据(仅key-id数据)
 storage.getAllDataForKey('user').then(users => {
     console.log(users);
 });
 
-// !! 清除某个key下的所有数据
+// !! 清除某个key下的所有数据(仅key-id数据)
 storage.clearMapForKey('user');
 
 // --------------------------------------------------  
