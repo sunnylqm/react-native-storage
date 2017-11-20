@@ -192,23 +192,23 @@ storage.load({
 
 // --------------------------------------------------
 
-// getIdsForKey
+// get all ids for "key-id" data under a key but not "key-only" data
 storage.getIdsForKey('user').then(ids => {
     console.log(ids);
 });
 
-// getAllDataForKey
+// get all "key-id" data under a key but not "key-only" data
 storage.getAllDataForKey('user').then(users => {
     console.log(users);
 });
 
-// !! clear all data under a key
+// !! clear all "key-id" data under a key but keep the "key-only" data
 storage.clearMapForKey('user');
 
 
 // --------------------------------------------------  
 
-// remove single record
+// remove a single record
 storage.remove({
 	key: 'lastPage'
 });
@@ -217,7 +217,7 @@ storage.remove({
 	id: '1001'
 });
 
-// !! clear map and remove all key-id data (but keep the key-only data)
+// !! clear map and remove all "key-id" data but keep the "key-only" data
 storage.clearMap();
 ```
 

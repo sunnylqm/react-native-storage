@@ -72,9 +72,10 @@ var storage = new Storage({
   // 则会调用相应的sync方法，无缝返回最新数据。
   // sync方法的具体说明会在后文提到
   // 你可以在构造函数这里就写好sync的方法
-  // 或是写到另一个文件里，这里require引入
   // 或是在任何时候，直接对storage.sync进行赋值修改
-  sync: require('./sync')  // 这个sync文件是要你自己写的
+  // 或是写到另一个文件里，这里require引入
+  sync: require('你可以另外写一个文件专门处理sync')  
+  	
 })  
   
 // 最好在全局范围内创建一个（且只有一个）storage实例，方便直接调用
@@ -119,7 +120,7 @@ var storage = new Storage({
     
     // syncInBackground(默认为true)意味着如果数据过期，
     // 在调用sync方法的同时先返回已经过期的数据。
-    // 设置为false的话，则始终强制返回sync方法提供的最新数据(当然会需要更多等待时间)。
+    // 设置为false的话，则等待sync方法提供的最新数据(当然会需要更多时间)。
     syncInBackground: true,
     
     // 你还可以给sync方法传递额外的参数
@@ -202,17 +203,17 @@ var storage = new Storage({
 
 // --------------------------------------------------
 
-// 获取某个key下的所有id
+// 获取某个key下的所有id(仅key-id数据)
 storage.getIdsForKey('user').then(ids => {
     console.log(ids);
 });
 
-// 获取某个key下的所有数据
+// 获取某个key下的所有数据(仅key-id数据)
 storage.getAllDataForKey('user').then(users => {
     console.log(users);
 });
 
-// !! 清除某个key下的所有数据
+// !! 清除某个key下的所有数据(仅key-id数据)
 storage.clearMapForKey('user');
 
 // --------------------------------------------------  
