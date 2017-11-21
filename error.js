@@ -2,19 +2,19 @@
  * Created by sunny on 9/1/16.
  */
 
-export class NotFoundError {
+export class NotFoundError extends Error {
   constructor(message) {
+    super(`Not Found! Params: ${message}`);
     this.name = 'NotFoundError';
-    this.message = `Not Found! Params: ${message}`;
     this.stack = new Error().stack; // Optional
   }
 }
 // NotFoundError.prototype = Object.create(Error.prototype);
 
-export class ExpiredError {
+export class ExpiredError extends Error {
   constructor(message) {
+    super(`Expired! Params: ${message}`);
     this.name = 'ExpiredError';
-    this.message = `Expired! Params: ${message}`;
     this.stack = new Error().stack; // Optional
   }
 }
