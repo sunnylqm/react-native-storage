@@ -156,10 +156,10 @@ export default class Storage {
     return Promise.all(tasks);
   }
   getBatchDataWithIds(params) {
-    let { key, ids, syncInBackground } = params;
+    let { key, ids, syncInBackground, syncParams } = params;
 
     return Promise.all(
-      ids.map((id) => this.load({ key, id, syncInBackground, autoSync: false, batched: true }))
+      ids.map((id) => this.load({ key, id, syncInBackground, autoSync: false, batched: true, syncParams }))
     ).then((results) => {
       return new Promise((resolve, reject) => {
         const ids = results.filter((value) => value.syncId !== undefined);
@@ -169,7 +169,8 @@ export default class Storage {
         return this.sync[key]({
           id: ids.map((value) => value.syncId),
           resolve,
-          reject
+          reject,
+          syncParams
         });
       }).then((data) => {
         return results.map(value => {
