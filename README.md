@@ -1,6 +1,6 @@
 # react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage)  [![npm version](https://badge.fury.io/js/react-native-storage.svg)](http://badge.fury.io/js/react-native-storage)
 
-This is a local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
+This is a local storage wrapper for both mobile React-Native apps (using AsyncStorage) and React browser-invoked web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
 查看中文文档[请点击README-CHN.md](README-CHN.md)
 
@@ -13,7 +13,7 @@ This is a local storage wrapper for both react-native(AsyncStorage) and browser(
 ### Config
 #### For Web
 You need to use [webpack](http://webpack.github.io/) and [babel](https://babeljs.io/) to enable es6 modules for web development.   
-You should add the following lines to your webpack config:  
+Add the following lines to your webpack config:  
 
 ```javascript
   // ...
@@ -40,7 +40,7 @@ You should add the following lines to your webpack config:
 ```  
 
 #### For React Native
-You don't have to configure anything(but require react native version >= 0.13).
+You don't have to configure anything (but React Native version >= 0.13 is required).
  
 
 ### Import
@@ -49,7 +49,7 @@ You don't have to configure anything(but require react native version >= 0.13).
 import Storage from 'react-native-storage';
 ```  
 
-Do not use `require('react-native-storage')`, which would cause error in react native version >= 0.16.
+Do not use `require('react-native-storage')`, which will cause an error in react native version >= 0.16.
 
 ### Init
 
@@ -61,26 +61,26 @@ var storage = new Storage({
 	// maximum capacity, default 1000 
 	size: 1000,
 
-	// Use AsyncStorage for RN, or window.localStorage for web.
-	// If not set, data would be lost after reload.
-	storageBackend: AsyncStorage,
+	// Use AsyncStorage for RN apps, or window.localStorage for web apps.
+	// If storageBackend is not set, data will be lost after reload.
+	storageBackend: AsyncStorage, // for web: window.localStorage
 	
-	// expire time, default 1 day(1000 * 3600 * 24 milliseconds).
+	// expire time, default: 1 day (1000 * 3600 * 24 milliseconds).
 	// can be null, which means never expire.
 	defaultExpires: 1000 * 3600 * 24,
 	
 	// cache data in the memory. default is true.
 	enableCache: true,
 	
-	// if data was not found in storage or expired,
-	// the corresponding sync method will be invoked and return 
+	// if data was not found in storage or expired data was found,
+	// the corresponding sync method will be invoked returning 
 	// the latest data.
 	sync : {
 		// we'll talk about the details later.
 	}
 })	
 
-// I suggest you have one(and only one) storage instance in global scope.
+// I suggest you have one (and only one) storage instance in global scope.
 
 // for web
 // window.storage = storage;
@@ -92,9 +92,9 @@ var storage = new Storage({
 ### Save & Load & Remove
 
 ```js
-// Save something with key only. 
-// Something more unique, and constantly being used.
-// They are permanently stored unless you remove.
+// Save something with key only. (using only a keyname but no id)
+// This key should be unique. This is for data frequently used.
+// The key and value pair is permanently stored unless you remove it yourself.
 storage.save({
 	key: 'loginState',   // Note: Do not use underscore("_") in key!
 	data: { 
@@ -103,7 +103,7 @@ storage.save({
 		token: 'some token'
 	},
 	
-	// if not specified, the defaultExpires will be applied instead.
+	// if expires not specified, the defaultExpires will be applied instead.
 	// if set to null, then it will never expire.
 	expires: 1000 * 3600
 });
@@ -112,17 +112,19 @@ storage.save({
 storage.load({
 	key: 'loginState',
 	
-	// autoSync(default true) means if data not found or expired,
+	// autoSync (default: true) means if data is not found or has expired,
 	// then invoke the corresponding sync method
 	autoSync: true,
 	
-	// syncInBackground(default true) means if data expired,
-	// return the outdated data first while invoke the sync method.
-	// It can be set to false to always return data provided by sync method when expired.(Of course it's slower)
+	// syncInBackground (default: true) means if data expired,
+	// return the outdated data first while invoking the sync method.
+	// If syncInBackground is set to false, and there is expired data, 
+	// it will wait for the new data and return only after the sync completed. 
+	// (This, of course, is slower)
 	syncInBackground: true,
 	
-	// you can pass extra params to sync method
-	// see sync example below for example
+	// you can pass extra params to the sync method
+	// see sync example below
 	syncParams: {
 	  extraFetchOptions: {
 	    // blahblah
@@ -148,9 +150,9 @@ storage.load({
 
 // --------------------------------------------------
 
-// Save something with key and id. Something of the same type(key). 
-// There is a quota over "key-id" data(the size parameter you pass in constructor).
-// By default the 1001th data will overwrite the 1st data. 
+// Save something with key and id. 
+// "key-id" data size cannot surpass the size parameter you pass in the constructor.
+// By default the 1001st data will overwrite the 1st data item. 
 // If you then load the 1st data, a catch(NotFoundError) or sync will be invoked.
 var userA = {
 	name: 'A',
@@ -164,7 +166,7 @@ var userA = {
 
 storage.save({
 	key: 'user',  // Note: Do not use underscore("_") in key!
-	id: '1001',	  // Note: Do not use underscore("_") in id!	
+	id: '1001',   // Note: Do not use underscore("_") in id!	
 	data: userA,
 	expires: 1000 * 60	 
 });
@@ -192,17 +194,20 @@ storage.load({
 
 // --------------------------------------------------
 
-// get all ids for "key-id" data under a key but not "key-only" data
+// get all ids for "key-id" data under a key, 
+// note: does not include "key-only" information (which has no ids) 
 storage.getIdsForKey('user').then(ids => {
     console.log(ids);
 });
 
-// get all "key-id" data under a key but not "key-only" data
+// get all the "key-id" data under a key
+// !! important: this does not include "key-only" data
 storage.getAllDataForKey('user').then(users => {
     console.log(users);
 });
 
-// !! clear all "key-id" data under a key but keep the "key-only" data
+// clear all "key-id" data under a key 
+// !! important: "key-only" data is not cleared by this function
 storage.clearMapForKey('user');
 
 
@@ -217,20 +222,22 @@ storage.remove({
 	id: '1001'
 });
 
-// !! clear map and remove all "key-id" data but keep the "key-only" data
+// clear map and remove all "key-id" data 
+// !! important: "key-only" data is not cleared, and is left intact
 storage.clearMap();
 ```
 
 ### Sync remote data(refresh)
-You can pass sync methods as one object parameter to the storage constructor, but also you can add it any time.
+There are two ways to set the sync method. 
+You can pass the sync method in the constructor's parameter, as a function in an object, 
+or you can define it at any time as shown below: 
 
 ```js
 storage.sync = {
 
-	// The name of the sync method must be the same of the data's key
+	// The name of the sync method must be the same as the data's key name
 	// And the passed params will be an all-in-one object.
-	// You can use promise here. 
-	// Or plain callback function with resolve/reject, like:
+	// You can either use promise here, or a plain callback function with resolve/reject, like:
 	user(params){
 		let { id, resolve, reject, syncParams: { extraFetchOptions, someFlag } } = params;
 		fetch('user/', {
@@ -267,7 +274,7 @@ storage.sync = {
 }
 ```
 
-With this example sync method, when you invoke:    
+In the following example the sync method is called, when you invoke `storage.load`:    
 
 ```js
 storage.load({
@@ -276,14 +283,17 @@ storage.load({
 }).then(...)
 ```
 
-If there is no user 1002 stored currently, then storage.sync.user would be invoked to fetch remote data and returned.    
+If there is no user 1002 currently in storage, then storage.sync.user will be invoked to fetch and return the remote data.    
 
 ### Load batch data
 
 ```js
-// Load batch data with the same parameters as storage.load, but in an array.
-// It will invoke sync methods on demand, 
-// and finally return them all in an ordered array.
+// Load batch data with an array of `storage.load` parameters.
+// It will invoke each key's sync method, 
+// and when all are complete will return all the data in an ordered array.
+// The sync methods behave according to the syncInBackground setting: (default true)
+// When set to true (the default), if timed out will return the current value 
+// while when set to false, will wait till the sync method completes
 
 storage.getBatchData([
 	{ key: 'loginState' },
@@ -305,7 +315,8 @@ storage.getBatchDataWithIds({
 .then( ... )
 ```
 
-There is a notable difference between the two methods except the arguments. **getBatchData** will invoke different sync methods(since the keys may be different) one by one when corresponding data is missing. However, **getBatchDataWithIds** will collect missing data, push their ids to an array, then pass the array to the corresponding sync method(to avoid too many requests) once, so you need to implement array query on server end and handle the parameters of sync method properly(cause the id parameter can be a single string or an array of strings).
+There is an important  difference between the way these two methods perform:
+**getBatchData** will invoke separate sync methods for each different key one after the other when the corresponding data is missing or not in sync. However, **getBatchDataWithIds** will collect a list of the missing data, pushing their ids to an array, and then pass the array to the single corresponding sync method once, reducing the number of requests, so you need to implement array query on the server side and handle the parameters of sync method properly. Note that the id parameter can be a single string or an array of strings.
 
 
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
