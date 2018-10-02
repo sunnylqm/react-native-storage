@@ -1,7 +1,7 @@
-jest.dontMock('../error.js');
-jest.dontMock('../storage.js');
+jest.dontMock('../src/error.js');
+jest.dontMock('../src/storage.js');
 
-import { NotFoundError, ExpiredError } from '../error';
+import { NotFoundError, ExpiredError } from '../src/error';
 
 describe('react-native-storage: custom error types', () => {
     test('NotFoundError instance should be error instance', () => {
