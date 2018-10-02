@@ -1,5 +1,5 @@
-jest.dontMock('../error.js');
-jest.dontMock('../storage.js');
+jest.dontMock('../src/error.js');
+jest.dontMock('../src/storage.js');
 
 import Storage from '../storage';
 const SIZE = 10,
@@ -122,7 +122,7 @@ describe('react-native-storage: basic function', () => {
           key: testKey1,
           data: testData1,
           expires: 1,
-        }).then(() => 
+        }).then(() =>
           storage.load({
             key: testKey1
           })

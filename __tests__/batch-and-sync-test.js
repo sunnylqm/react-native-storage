@@ -1,8 +1,8 @@
 /**
  * Created by sunny on 15/10/5.
  */
-jest.dontMock('../error.js');
-jest.dontMock('../storage.js');
+jest.dontMock('../src/error.js');
+jest.dontMock('../src/storage.js');
 
 import Storage from '../storage';
 let storage = new Storage();
