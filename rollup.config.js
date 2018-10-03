@@ -1,27 +1,43 @@
+import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
+import replace from 'rollup-plugin-replace';
+import { terser } from 'rollup-plugin-terser';
 
-export default {
+const env = process.env.NODE_ENV;
+const config = {
   input: './src/storage.js',
   output: [
     {
       exports: 'named',
-      file: 'dist/react-native-storage.js',
+      file: 'lib/storage.umd.js',
       format: 'umd',
       name: 'storage',
     },
     {
       exports: 'named',
-      file: 'dist/react-native-storage.cjs.js',
+      file: 'lib/storage.cjs.js',
       format: 'cjs',
     },
     {
-      file: 'dist/react-native-storage.esm.js',
+      file: 'lib/storage.esm.js',
       format: 'esm',
     }
   ],
   plugins: [
+    resolve(),
     babel({
       exclude: 'node_modules/**',
+      plugins: ['@babel/external-helpers'],
+      externalHelpers: true
     }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(env)
+    })
   ],
+};
+
+if (env === 'production') {
+  config.plugins.push(terser());
 }
+
+export default config;

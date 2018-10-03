@@ -1,10 +1,25 @@
 {
   "name": "react-native-storage",
-  "version": "0.2.2",
-  "description": "A local storage wrapper for both react-native(AsyncStorage) and browser(localStorage). Support size controlling, auto expiring, remote data auto syncing and getting batch data in one query.",
-  "main": "dist/react-native-storage.cjs.js",
-  "jsnext:main": "dist/react-native-storage.esm.js",
-  "module": "dist/react-native-storage.esm.js",
+  "version": "1.0.0",
+  "description": "A local storage wrapper for both react-native(AsyncStorage) and browser(localStorage).",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunnylqm/react-native-storage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunnylqm/react-native-storage/issues"
+  },
+  "homepage": "https://github.com/sunnylqm/react-native-storage#readme",
+  "keywords": [
+    "react-native",
+    "localStorage",
+    "AsyncStorage"
+  ],
+  "author": "sunnylqm",
+  "main": "lib/storage.cjs.js",
+  "jsnext:main": "lib/storage.esm.js",
+  "module": "lib/storage.esm.js",
   "typings": "./storage.d.ts",
   "scripts": {
     "build": "rollup -c",
@@ -17,24 +32,10 @@
       "./jestSupport/mockStorage.js"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sunnylqm/react-native-storage.git"
-  },
-  "keywords": [
-    "react-native",
-    "localStorage",
-    "AsyncStorage"
-  ],
-  "author": "sunnylqm",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sunnylqm/react-native-storage/issues"
-  },
-  "homepage": "https://github.com/sunnylqm/react-native-storage#readme",
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
+    "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-transform-destructuring": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
@@ -42,6 +43,9 @@
     "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
     "rollup": "^0.66.2",
-    "rollup-plugin-babel": "^4.0.3"
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-terser": "^3.0.0"
   }
 }

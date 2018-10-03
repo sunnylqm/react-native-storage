@@ -4,7 +4,7 @@
 jest.dontMock('../src/error.js');
 jest.dontMock('../src/storage.js');
 
-import Storage from '../storage';
+import Storage from '../src/storage';
 let storage = new Storage();
 let localStorage = new Storage({
   storageBackend: window.localStorage
