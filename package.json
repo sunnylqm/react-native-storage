@@ -17,10 +17,12 @@
     "AsyncStorage"
   ],
   "author": "sunnylqm",
-  "main": "lib/storage.umd.js",
+  "main": "lib/storage.cjs.js",
+  "jsnext:main": "lib/storage.esm.js",
   "module": "lib/storage.esm.js",
   "typings": "./storage.d.ts",
   "scripts": {
+    "build": "rollup -c",
     "test": "jest"
   },
   "jest": {
@@ -31,6 +33,14 @@
     ]
   },
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-external-helpers": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-destructuring": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
     "rollup": "^0.66.2",
     "rollup-plugin-babel": "^4.0.3",
