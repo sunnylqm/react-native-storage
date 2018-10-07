@@ -1,6 +1,6 @@
 {
   "name": "react-native-storage",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "A local storage wrapper for both react-native(AsyncStorage) and browser(localStorage).",
   "license": "MIT",
   "repository": {
@@ -16,13 +16,20 @@
     "localStorage",
     "AsyncStorage"
   ],
+  "files": [
+    "lib/",
+    "src/"
+  ],
   "author": "sunnylqm",
   "main": "lib/storage.cjs.js",
   "jsnext:main": "lib/storage.esm.js",
   "module": "lib/storage.esm.js",
-  "typings": "./storage.d.ts",
+  "react-native": "src/storage.js",
+  "typings": "lib/storage.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "clean": "rm -rf lib/",
+    "build": "rollup -c && cp src/storage.d.ts lib/",
+    "prepare": "yarn build",
     "test": "jest"
   },
   "jest": {
@@ -37,16 +44,15 @@
     "@babel/core": "^7.1.2",
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/plugin-transform-destructuring": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
     "regenerator-runtime": "^0.12.1",
-    "rollup": "^0.66.2",
+    "rollup": "^0.66.4",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-terser": "^3.0.0"
   }
 }

@@ -1,7 +1,0 @@
-.tmp
-.gitignore
-.nvmrc
-babel.config.js
-webpack*
-__tests__
-jestSupport
