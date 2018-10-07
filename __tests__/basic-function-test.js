@@ -1,17 +1,19 @@
 import Storage from '../src/storage';
+import { NotFoundError, ExpiredError } from '../src/error';
 const SIZE = 10,
   DEFAULTEXPIRES = 1000 * 3600;
-let localStorage = new Storage({
+
+const localStorage = new Storage({
   size: SIZE,
   defaultExpires: DEFAULTEXPIRES,
-  storageBackend: window.localStorage
+  storageBackend: global.localStorage
 });
-let asyncStorage = new Storage({
+const asyncStorage = new Storage({
   size: SIZE,
   defaultExpires: DEFAULTEXPIRES,
-  storageBackend: window.asyncStorage
+  storageBackend: global.asyncStorage
 });
-let stores = { localStorage, asyncStorage };
+const stores = { localStorage, asyncStorage };
 
 describe('react-native-storage: basic function', () => {
   Object.keys(stores).map(storageKey => {
@@ -175,65 +177,56 @@ describe('react-native-storage: basic function', () => {
         Date.prototype.getTime = originGetTime;
       });
     });
-    //test('overwrites "key+id" data when loops over(exceeds SIZE)', () => {
-    //  let testKey = 'testKey' + Math.random(),
-    //    testId = 'testId' + Math.random(),
-    //    testData = 'testData' + Math.random();
-    //  let ret1, ret2, done1, done2, tmpIndex1, tmpIndex2;
-    //  runs(() => {
-    //    storage.save({
-    //      key: testKey,
-    //      id: testId,
-    //      data: testData
-    //    });
-    //    tmpIndex1 = storage._m.index;
-    //    for (let i = 0; i < SIZE - 1; i++) {
-    //      storage.save({
-    //        key: 'testKey' + Math.random(),
-    //        id: 'testId' + Math.random(),
-    //        data: 'testData' + Math.random()
-    //      });
-    //    }
-    //
-    //    //not overwrited yet
-    //    storage.load({
-    //      key: testKey,
-    //      id: testId
-    //    }).then( ret => {
-    //      ret1 = ret;
-    //      done1 = true;
-    //    }).catch(() => {
-    //      done1 = true;
-    //    });
-    //
-    //    //overwrite
-    //    storage.save({
-    //      key: 'testKey' + Math.random(),
-    //      id: 'testId' + Math.random(),
-    //      data: 'testData' + Math.random()
-    //    });
-    //    tmpIndex2 = storage._m.index;
-    //    storage.load({
-    //      key: testKey,
-    //      id: testId
-    //    }).then( ret => {
-    //      ret2 = ret;
-    //      done2 = true;
-    //    }).catch(() => {
-    //      done2 = true;
-    //    });
-    //  });
-    //  waitsFor(() => {
-    //    return done1 && done2;
-    //  }, 'Values should be loaded', 1000);
-    //
-    //  runs(() => {
-    //    expect(tmpIndex1).toBe(tmpIndex2);
-    //    expect(ret1).toBe(testData);
-    //    expect(ret2).toNotBe(testData);
-    //  });
-    //});
+    test('overwrites "key+id" data when loops over(exceeds SIZE)', async () => {
+      let testKey = 'testKey' + Math.random(),
+        testId = 'testId' + Math.random(),
+        testData = 'testData' + Math.random();
+      let ret1, ret2, done1, done2, cursorIndex1, cursorIndex2;
 
+      storage.save({
+        key: testKey,
+        id: testId,
+        data: testData
+      });
+
+      cursorIndex1 = storage._m.index;
+
+      for (let i = 0; i < SIZE - 1; i++) {
+        storage.save({
+          key: 'testKey' + Math.random(),
+          id: 'testId' + Math.random(),
+          data: 'testData' + Math.random()
+        });
+      }
+
+      // not overwrited yet
+      ret1 = await storage.load({
+        key: testKey,
+        id: testId
+      });
+
+      // overwrite
+      storage.save({
+        key: 'testKey' + Math.random(),
+        id: 'testId' + Math.random(),
+        data: 'testData' + Math.random()
+      });
+
+      cursorIndex2 = storage._m.index;
+
+      try {
+        ret2 = await storage.load({
+          key: testKey,
+          id: testId
+        });
+      } catch (e) {
+        ret2 = e;
+      }
+
+      expect(cursorIndex1).toBe(cursorIndex2);
+      expect(ret1).toBe(testData);
+      expect(ret2 instanceof NotFoundError).toBeTruthy();
+    });
     test('removes data correctly' + `(${storageKey})`, () => {
       let testKey1 = 'testKey1' + Math.random(),
         testKey2 = 'testKey2' + Math.random(),

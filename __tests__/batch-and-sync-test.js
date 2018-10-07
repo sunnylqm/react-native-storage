@@ -7,10 +7,10 @@ jest.dontMock('../src/storage.js');
 import Storage from '../src/storage';
 let storage = new Storage();
 let localStorage = new Storage({
-  storageBackend: window.localStorage
+  storageBackend: global.localStorage
 });
 let asyncStorage = new Storage({
-  storageBackend: window.asyncStorage
+  storageBackend: global.asyncStorage
 });
 let stores = { localStorage, asyncStorage };
 
@@ -23,11 +23,11 @@ describe('react-native-storage: batch and sync test', () => {
         testId2 = 'testId2' + Math.random(),
         syncData = 'syncData';
       let sync1 = jest.fn(params => {
-        let {resolve} = params;
+        let { resolve } = params;
         resolve && resolve(syncData);
       });
       let sync2 = jest.fn(params => {
-        let {id, resolve} = params;
+        let { id, resolve } = params;
         resolve && resolve(syncData + id);
       });
       storage.sync[testKey1] = sync1;
@@ -58,11 +58,11 @@ describe('react-native-storage: batch and sync test', () => {
         testData2 = 'testData2',
         syncData = 'syncData';
       let sync1 = jest.fn(params => {
-        let {resolve} = params;
+        let { resolve } = params;
         resolve && resolve(syncData);
       });
       let sync2 = jest.fn(params => {
-        let {id, resolve} = params;
+        let { id, resolve } = params;
         resolve && resolve(syncData + id);
       });
       storage.sync[testKey1] = sync1;
@@ -84,12 +84,12 @@ describe('react-native-storage: batch and sync test', () => {
       //instantly load
       return Promise.all([
         storage.load({
-        key: testKey1
-      }),
-      storage.load({
-        key: testKey2,
-        id: testId2
-      })
+          key: testKey1
+        }),
+        storage.load({
+          key: testKey2,
+          id: testId2
+        })
       ]).then(([ret1, ret2]) => {
         expect(ret1).toBe(testData1);
         expect(sync1.mock.calls.length).toBe(0);
@@ -97,54 +97,57 @@ describe('react-native-storage: batch and sync test', () => {
         expect(ret2).toBe(testData2);
       });
     });
-    test('triggers sync when data expires but still returns outdated data(syncInBackground: true)' + `(${storageKey})`, () => {
-      let testKey1 = 'testKey1' + Math.random(),
-        testKey2 = 'testKey2' + Math.random(),
-        testId2 = 'testId2' + Math.random(),
-        testData1 = 'testData1',
-        testData2 = 'testData2',
-        syncData = 'syncData';
-      let sync1 = jest.fn(params => {
-        let {resolve} = params;
-        resolve && resolve(syncData);
-      });
-      let sync2 = jest.fn(params => {
-        let {id, resolve} = params;
-        resolve && resolve(syncData + id);
-      });
-      storage.sync[testKey1] = sync1;
-      storage.sync[testKey2] = sync2;
+    test(
+      'triggers sync when data expires but still returns outdated data(syncInBackground: true)' + `(${storageKey})`,
+      () => {
+        let testKey1 = 'testKey1' + Math.random(),
+          testKey2 = 'testKey2' + Math.random(),
+          testId2 = 'testId2' + Math.random(),
+          testData1 = 'testData1',
+          testData2 = 'testData2',
+          syncData = 'syncData';
+        let sync1 = jest.fn(params => {
+          let { resolve } = params;
+          resolve && resolve(syncData);
+        });
+        let sync2 = jest.fn(params => {
+          let { id, resolve } = params;
+          resolve && resolve(syncData + id);
+        });
+        storage.sync[testKey1] = sync1;
+        storage.sync[testKey2] = sync2;
 
-      //save data, expires in no time
-      storage.save({
-        key: testKey1,
-        data: testData1,
-        expires: -1
-      });
-      storage.save({
-        key: testKey2,
-        id: testId2,
-        data: testData2,
-        expires: -1
-      });
+        //save data, expires in no time
+        storage.save({
+          key: testKey1,
+          data: testData1,
+          expires: -1
+        });
+        storage.save({
+          key: testKey2,
+          id: testId2,
+          data: testData2,
+          expires: -1
+        });
 
-      //instantly load
-      return Promise.all([
-        storage.load({
-        key: testKey1
-      }),
-      storage.load({
-        key: testKey2,
-        id: testId2
-      })
-      ]).then(([ret1, ret2]) => {
-        expect(ret1).toBe(testData1);
-        expect(sync1.mock.calls.length).toBe(1);
+        //instantly load
+        return Promise.all([
+          storage.load({
+            key: testKey1
+          }),
+          storage.load({
+            key: testKey2,
+            id: testId2
+          })
+        ]).then(([ret1, ret2]) => {
+          expect(ret1).toBe(testData1);
+          expect(sync1.mock.calls.length).toBe(1);
 
-        expect(ret2).toBe(testData2);
-        expect(sync2.mock.calls.length).toBe(1);
-      });
-    });
+          expect(ret2).toBe(testData2);
+          expect(sync2.mock.calls.length).toBe(1);
+        });
+      }
+    );
     test('triggers sync when data expires and returns latest data(syncInBackground: false)' + `(${storageKey})`, () => {
       let testKey1 = 'testKey1' + Math.random(),
         testKey2 = 'testKey2' + Math.random(),
@@ -153,11 +156,11 @@ describe('react-native-storage: batch and sync test', () => {
         testData2 = 'testData2',
         syncData = 'syncData';
       let sync1 = jest.fn(params => {
-        let {resolve} = params;
+        let { resolve } = params;
         resolve && resolve(syncData);
       });
       let sync2 = jest.fn(params => {
-        let {id, resolve} = params;
+        let { id, resolve } = params;
         resolve && resolve(syncData + id);
       });
       storage.sync[testKey1] = sync1;
@@ -194,7 +197,6 @@ describe('react-native-storage: batch and sync test', () => {
         expect(ret2).toBe(syncData + testId2);
         expect(sync2.mock.calls.length).toBe(1);
       });
-
     });
     test('returns batch data with batch keys' + `(${storageKey})`, () => {
       let testKey1 = 'testKey1' + Math.random(),
@@ -204,7 +206,7 @@ describe('react-native-storage: batch and sync test', () => {
         testData2 = 'testData2',
         testData3 = 'testData3';
       let sync3 = jest.fn(params => {
-        let {resolve} = params;
+        let { resolve } = params;
         resolve && resolve(testData3);
       });
       storage.sync[testKey3] = sync3;
@@ -220,11 +222,7 @@ describe('react-native-storage: batch and sync test', () => {
       });
 
       //instantly load
-      return storage.getBatchData([
-        {key: testKey1},
-        {key: testKey2},
-        {key: testKey3}
-      ]).then((ret) => {
+      return storage.getBatchData([{ key: testKey1 }, { key: testKey2 }, { key: testKey3 }]).then(ret => {
         expect(ret[0]).toBe(testData1);
         expect(ret[1]).toBe(testData2);
         expect(ret[2]).toBe(testData3);
@@ -240,7 +238,7 @@ describe('react-native-storage: batch and sync test', () => {
         testData2 = 'testData2',
         testData3 = 'testData3';
       let sync = jest.fn(params => {
-        let {resolve} = params;
+        let { resolve } = params;
         // when id is an array, the return value should be an ordered array too
         resolve && resolve([testData3]);
       });
@@ -258,15 +256,17 @@ describe('react-native-storage: batch and sync test', () => {
       });
 
       //instantly load
-      return storage.getBatchDataWithIds({
-        key: testKey,
-        ids: [testId1, testId2, testId3]
-      }).then(ret => {
-        expect(ret[0]).toBe(testData1);
-        expect(ret[1]).toBe(testData2);
-        expect(ret[2]).toBe(testData3);
-        expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify([testId3]));
-      });
+      return storage
+        .getBatchDataWithIds({
+          key: testKey,
+          ids: [testId1, testId2, testId3]
+        })
+        .then(ret => {
+          expect(ret[0]).toBe(testData1);
+          expect(ret[1]).toBe(testData2);
+          expect(ret[2]).toBe(testData3);
+          expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify([testId3]));
+        });
     });
-  })
+  });
 });

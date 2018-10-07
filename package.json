@@ -42,6 +42,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
+    "regenerator-runtime": "^0.12.1",
     "rollup": "^0.66.2",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-node-resolve": "^3.4.0",
