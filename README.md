@@ -1,56 +1,14 @@
 # react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) [![npm version](https://badge.fury.io/js/react-native-storage.svg)](http://badge.fury.io/js/react-native-storage)
 
-This is a local storage wrapper for both mobile React-Native apps (using AsyncStorage) and React browser-invoked web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
+This is a local storage wrapper for both react native apps (using AsyncStorage) and web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
-查看中文文档[请点击 README-CHN.md](README-CHN.md)
+查看中文文档[请点击 README-CHN.md](README.zh-CN.md)
 
 ## Install
 
-    npm install react-native-storage --save
+    npm install react-native-storage
 
 ## Usage
-
-### Config
-
-#### For Web
-
-You need to use [webpack](http://webpack.github.io/) and [babel](https://babeljs.io/) to enable es6 modules for web development.  
-Add the following lines to your webpack config:
-
-```javascript
-// ...
-module: {
-  loaders: [
-    // ...
-    {
-      test: /\.js?$/,
-      include: [
-        // path.join(__dirname, 'your-own-js-files'),
-        // path.join(__dirname, 'node_modules/some-other-lib-that-needs-babel'),
-        path.join(__dirname, 'node_modules/react-native-storage')
-      ],
-      loader: 'babel',
-      query: {
-        cacheDirectory: true,
-        presets: ['es2015', 'stage-1', 'react'],
-        plugins: ['transform-runtime']
-      }
-    }
-  ];
-}
-```
-
-#### For React Native
-
-You don't have to configure anything (but React Native version >= 0.13 is required).
-
-### Import
-
-```bash
-import Storage from 'react-native-storage';
-```
-
-Do not use `require('react-native-storage')`, which will cause an error in react native version >= 0.16.
 
 ### Init
 
@@ -58,7 +16,7 @@ Do not use `require('react-native-storage')`, which will cause an error in react
 import Storage from 'react-native-storage';
 import { AsyncStorage } from 'react-native';
 
-var storage = new Storage({
+const storage = new Storage({
   // maximum capacity, default 1000
   size: 1000,
 
@@ -239,46 +197,33 @@ or you can define it at any time as shown below:
 storage.sync = {
   // The name of the sync method must be the same as the data's key name
   // And the passed params will be an all-in-one object.
-  // You can either use promise here, or a plain callback function with resolve/reject, like:
-  user(params) {
+  // You can return a value or a promise here
+  async user(params) {
     let {
       id,
-      resolve,
-      reject,
       syncParams: { extraFetchOptions, someFlag }
     } = params;
-    fetch('user/', {
-      method: 'GET',
-      body: 'id=' + id,
+    const response = await fetch('user/?id=' + id, {
       ...extraFetchOptions
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        // console.log(json);
-        if (json && json.user) {
-          storage.save({
-            key: 'user',
-            id,
-            data: json.user
-          });
-
-          if (someFlag) {
-            // do something for this extra param
-          }
-
-          // Call resolve() when succeed
-          resolve && resolve(json.user);
-        } else {
-          // Call reject() when failed
-          reject && reject(new Error('data parse error'));
-        }
-      })
-      .catch(err => {
-        console.warn(err);
-        reject && reject(err);
+    });
+    const responseText = await response.text();
+    console.log(`user${id} sync resp: `, responseText);
+    const json = JSON.parse(responseText);
+    if (json && json.user) {
+      storage.save({
+        key: 'user',
+        id,
+        data: json.user
       });
+      if (someFlag) {
+        // do something for some custom flag
+      }
+      // return required data when succeed
+      return json.user;
+    } else {
+      // throw error when failed
+      throw new Error(`error syncing user${id}`));
+    }
   }
 };
 ```

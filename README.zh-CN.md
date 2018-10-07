@@ -6,51 +6,9 @@
 
 ## 安装
 
-npm install react-native-storage --save
+npm install react-native-storage
 
 ## 使用说明
-
-### 配置
-
-### Web 开发
-
-对于 Web 开发你需要使用[webpack](http://webpack.github.io/)和[babel](https://babeljs.io/)来支持 es6 模块导入功能。  
-在 webpack 的配置中添加如下几行：
-
-```javascript
-// ...
-module: {
-  loaders: [
-    // ...
-    {
-      test: /\.js?$/,
-      include: [
-        // path.join(__dirname, '你自己的js文件路径'),
-        // path.join(__dirname, 'node_modules/其他需要babel的第三方库'),
-        path.join(__dirname, 'node_modules/react-native-storage')
-      ],
-      loader: 'babel',
-      query: {
-        cacheDirectory: true,
-        presets: ['es2015', 'stage-1', 'react'],
-        plugins: ['transform-runtime']
-      }
-    }
-  ];
-}
-```
-
-#### React Native 开发
-
-无需配置直接使用(但要求 0.13 或更高版本)。
-
-### 导入
-
-```javascript
-import Storage from 'react-native-storage';
-```
-
-请勿使用`require('react-native-storage')`语法, 否则在 react native 0.16 之后的版本中会报错.
 
 ### 初始化
 
@@ -58,7 +16,7 @@ import Storage from 'react-native-storage';
 import Storage from 'react-native-storage';
 import { AsyncStorage } from 'react-native';
 
-var storage = new Storage({
+const storage = new Storage({
   // 最大容量，默认值1000条数据循环存储
   size: 1000,
 
@@ -238,47 +196,34 @@ storage.clearMap();
 ```javascript
 storage.sync = {
   // sync方法的名字必须和所存数据的key完全相同
-  // 方法接受的参数为一整个object，所有参数从object中解构取出
-  // 这里可以使用promise。或是使用普通回调函数，但需要调用resolve或reject。
-  user(params) {
-    let {
+  // 参数从params中解构取出
+  // 最后返回所需数据或一个promise
+  async user(params) {
+    const {
       id,
-      resolve,
-      reject,
       syncParams: { extraFetchOptions, someFlag }
     } = params;
-    fetch('user/', {
-      method: 'GET',
-      body: 'id=' + id,
+    const response = await fetch('user/?id=' + id, {
       ...extraFetchOptions
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        //console.log(json);
-        if (json && json.user) {
-          storage.save({
-            key: 'user',
-            id,
-            data: json.user
-          });
-
-          if (someFlag) {
-            // 根据syncParams中的额外参数做对应处理
-          }
-
-          // 成功则调用resolve
-          resolve && resolve(json.user);
-        } else {
-          // 失败则调用reject
-          reject && reject(new Error('data parse error'));
-        }
-      })
-      .catch(err => {
-        console.warn(err);
-        reject && reject(err);
+    });
+    const responseText = await response.text();
+    console.log(`user${id} sync resp: `, responseText);
+    const json = JSON.parse(responseText);
+    if (json && json.user) {
+      storage.save({
+        key: 'user',
+        id,
+        data: json.user
       });
+      if (someFlag) {
+        // 根据一些自定义标志变量操作
+      }
+      // 返回所需数据
+      return json.user;
+    } else {
+      // 出错时抛出异常
+      throw new Error(`error syncing user${id}`));
+    }
   }
 };
 ```
