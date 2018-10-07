@@ -76,12 +76,12 @@ export default class Storage {
       newId = this._getId(key, id),
       m = this._m;
     if (m[newId] !== undefined) {
-      //update existed data
+      // update existing data
       if (this.enableCache) this.cache[newId] = JSON.parse(data);
       return this.setItem('map_' + m[newId], data);
     }
     if (m[m.index] !== undefined) {
-      //loop over, delete old data
+      // loop over, delete old data
       let oldId = m[m.index];
       let splitOldId = oldId.split('_');
       delete m[oldId];
@@ -122,7 +122,7 @@ export default class Storage {
         return;
       }
     }
-    let now = new Date().getTime();
+    let now = Date.now();
     if (expires !== null) {
       dataToSave.expires = now + expires;
     }
@@ -147,41 +147,41 @@ export default class Storage {
     }
   }
   getBatchData(querys) {
-    let tasks = [];
-    for (let i = 0, query; (query = querys[i]); i++) {
-      tasks[i] = this.load(query);
-    }
-    return Promise.all(tasks);
+    return Promise.all(querys.map(query => this.load(query)));
   }
-  getBatchDataWithIds(params) {
+  async getBatchDataWithIds(params) {
     let { key, ids, syncInBackground } = params;
-
-    return Promise.all(ids.map(id => this.load({ key, id, syncInBackground, autoSync: false, batched: true }))).then(
-      results => {
-        return new Promise((resolve, reject) => {
-          const ids = results.filter(value => value.syncId !== undefined);
-          if (!ids.length) {
-            return resolve();
-          }
-          return this.sync[key]({
-            id: ids.map(value => value.syncId),
-            resolve,
-            reject
-          });
-        }).then(data => {
-          return results.map(value => {
-            return value.syncId ? data.shift() : value;
-          });
-        });
-      }
+    const tasks = ids.map(id =>
+      this.load({
+        key,
+        id,
+        syncInBackground,
+        autoSync: false,
+        batched: true
+      })
     );
+    const results = await Promise.all(tasks);
+    const missingIds = [];
+    results.forEach(value => {
+      if (value.syncId !== undefined) {
+        missingIds.push(value.syncId);
+      }
+    });
+    if (missingIds.length) {
+      const syncData = await this.sync[key]({
+        id: missingIds
+      });
+      return results.map(value => {
+        return value.syncId ? syncData.shift() : value;
+      });
+    } else {
+      return results;
+    }
   }
   _lookupGlobalItem(params) {
-    let ret;
-    let { key } = params;
+    const { key } = params;
     if (this.enableCache && this.cache[key] !== undefined) {
-      ret = this.cache[key];
-      return this._loadGlobalItem({ ret, ...params });
+      return this._loadGlobalItem({ ret: this.cache[key], ...params });
     }
     return this.getItem(key).then(ret => this._loadGlobalItem({ ret, ...params }));
   }
@@ -189,9 +189,9 @@ export default class Storage {
     let { key, ret, autoSync, syncInBackground, syncParams } = params;
     if (ret === null || ret === undefined) {
       if (autoSync && this.sync[key]) {
-        return new Promise((resolve, reject) => this.sync[key]({ resolve, reject, syncParams }));
+        return this.sync[key]({ syncParams });
       }
-      return Promise.reject(new NotFoundError(JSON.stringify(params)));
+      throw new NotFoundError(JSON.stringify(params));
     }
     if (typeof ret === 'string') {
       ret = JSON.parse(ret);
@@ -199,28 +199,28 @@ export default class Storage {
         this.cache[key] = ret;
       }
     }
-    let now = new Date().getTime();
+    let now = Date.now();
     if (ret.expires < now) {
       if (autoSync && this.sync[key]) {
         if (syncInBackground) {
           this.sync[key]({ syncParams });
-          return Promise.resolve(ret.rawData);
+          return ret.rawData;
         }
-        return new Promise((resolve, reject) => this.sync[key]({ resolve, reject, syncParams }));
+        return this.sync[key]({ syncParams });
       }
-      return Promise.reject(new ExpiredError(JSON.stringify(params)));
+      throw new ExpiredError(JSON.stringify(params));
     }
-    return Promise.resolve(ret.rawData);
+    return ret.rawData;
   }
   _noItemFound(params) {
     let { key, id, autoSync, syncParams } = params;
     if (this.sync[key]) {
       if (autoSync) {
-        return new Promise((resolve, reject) => this.sync[key]({ id, syncParams, resolve, reject }));
+        return this.sync[key]({ id, syncParams });
       }
-      return Promise.resolve({ syncId: id });
+      return { syncId: id };
     }
-    return Promise.reject(new NotFoundError(JSON.stringify(params)));
+    throw new NotFoundError(JSON.stringify(params));
   }
   _loadMapItem(params) {
     let { ret, key, id, autoSync, batched, syncInBackground, syncParams } = params;
@@ -235,27 +235,27 @@ export default class Storage {
         this.cache[newId] = ret;
       }
     }
-    let now = new Date().getTime();
+    let now = Date.now();
     if (ret.expires < now) {
       if (autoSync && this.sync[key]) {
         if (syncInBackground) {
           this.sync[key]({ id, syncParams });
-          return Promise.resolve(ret.rawData);
+          return ret.rawData;
         }
-        return new Promise((resolve, reject) => this.sync[key]({ id, resolve, reject, syncParams }));
+        return this.sync[key]({ id, syncParams });
       }
       if (batched) {
-        return Promise.resolve({ syncId: id });
+        return { syncId: id };
       }
-      return Promise.reject(new ExpiredError(JSON.stringify(params)));
+      throw new ExpiredError(JSON.stringify(params));
     }
-    return Promise.resolve(ret.rawData);
+    return ret.rawData;
   }
   _lookUpInMap(params) {
-    let m = this._m,
-      ret;
-    let { key, id } = params;
-    let newId = this._getId(key, id);
+    let ret;
+    const m = this._m;
+    const { key, id } = params;
+    const newId = this._getId(key, id);
     if (this.enableCache && this.cache[newId]) {
       ret = this.cache[newId];
       return this._loadMapItem({ ret, ...params });
@@ -278,7 +278,7 @@ export default class Storage {
       }
       let newId = this._getId(key, id);
 
-      //remove existed data
+      // remove existing data
       if (m[newId] !== undefined) {
         if (this.enableCache && this.cache[newId]) {
           delete this.cache[newId];
@@ -292,41 +292,31 @@ export default class Storage {
     });
   }
   _removeIdInKey(key, id) {
-    let indexTobeRemoved = (this._m.__keys__[key] || []).indexOf(id);
+    const indexTobeRemoved = (this._m.__keys__[key] || []).indexOf(id);
     if (indexTobeRemoved !== -1) {
       this._m.__keys__[key].splice(indexTobeRemoved, 1);
     }
   }
   load(params) {
-    let { key, id, autoSync = true, syncInBackground = true, syncParams } = params;
-    return this._mapPromise.then(
-      () =>
-        new Promise((resolve, reject) => {
-          if (id === undefined) {
-            return resolve(
-              this._lookupGlobalItem({
-                key,
-                resolve,
-                reject,
-                autoSync,
-                syncInBackground,
-                syncParams
-              })
-            );
-          }
-          return resolve(
-            this._lookUpInMap({
-              key,
-              id,
-              resolve,
-              reject,
-              autoSync,
-              syncInBackground,
-              syncParams
-            })
-          );
-        })
-    );
+    const { key, id, autoSync = true, syncInBackground = true, syncParams } = params;
+    return this._mapPromise.then(() => {
+      if (id === undefined) {
+        return this._lookupGlobalItem({
+          key,
+          autoSync,
+          syncInBackground,
+          syncParams
+        });
+      } else {
+        return this._lookUpInMap({
+          key,
+          id,
+          autoSync,
+          syncInBackground,
+          syncParams
+        });
+      }
+    });
   }
   clearMap() {
     this.removeItem('map').then(() => {
