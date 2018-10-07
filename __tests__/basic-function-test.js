@@ -120,9 +120,9 @@ describe('react-native-storage: basic function', () => {
     });
 
     test('rejects when data expired and no sync method' + `(${storageKey})`, () => {
-      let originGetTime = Date.prototype.getTime;
+      let originDateNow = Date.now;
       let starttime = 0;
-      Date.prototype.getTime = jest.fn(() => {
+      Date.now = jest.fn(() => {
         return (starttime += 100);
       });
       let testKey1 = 'testKey' + Math.random(),
@@ -174,7 +174,7 @@ describe('react-native-storage: basic function', () => {
         expect(ret2).toBeUndefined();
         expect(error1.name).toBe('ExpiredError');
         expect(error2.name).toBe('ExpiredError');
-        Date.prototype.getTime = originGetTime;
+        Date.now = originDateNow;
       });
     });
     test('overwrites "key+id" data when loops over(exceeds SIZE)', async () => {

@@ -1,44 +1,39 @@
 /**
  * Created by sunny on 15/10/5.
  */
-jest.dontMock('../src/error.js');
-jest.dontMock('../src/storage.js');
 
 import Storage from '../src/storage';
-let storage = new Storage();
-let localStorage = new Storage({
+const localStorage = new Storage({
   storageBackend: global.localStorage
 });
-let asyncStorage = new Storage({
+const asyncStorage = new Storage({
   storageBackend: global.asyncStorage
 });
-let stores = { localStorage, asyncStorage };
+const stores = { localStorage, asyncStorage };
 
 describe('react-native-storage: batch and sync test', () => {
   Object.keys(stores).map(storageKey => {
-    let storage = stores[storageKey];
+    const storage = stores[storageKey];
     test('triggers sync when no data found' + `(${storageKey})`, () => {
-      let testKey1 = 'testKey1' + Math.random(),
+      const testKey1 = 'testKey1' + Math.random(),
         testKey2 = 'testKey2' + Math.random(),
         testId2 = 'testId2' + Math.random(),
         syncData = 'syncData';
-      let sync1 = jest.fn(params => {
-        let { resolve } = params;
-        resolve && resolve(syncData);
+      const sync1 = jest.fn(async params => {
+        return syncData;
       });
-      let sync2 = jest.fn(params => {
-        let { id, resolve } = params;
-        resolve && resolve(syncData + id);
+      const sync2 = jest.fn(async params => {
+        return syncData + params.id;
       });
       storage.sync[testKey1] = sync1;
       storage.sync[testKey2] = sync2;
 
       return Promise.all([
-        //key not found
+        // key not found
         storage.load({
           key: testKey1
         }),
-        //key and id not found
+        // key and id not found
         storage.load({
           key: testKey2,
           id: testId2
@@ -68,7 +63,7 @@ describe('react-native-storage: batch and sync test', () => {
       storage.sync[testKey1] = sync1;
       storage.sync[testKey2] = sync2;
 
-      //save data, expires in long time
+      // save data, expires in long time
       storage.save({
         key: testKey1,
         data: testData1,
@@ -81,7 +76,7 @@ describe('react-native-storage: batch and sync test', () => {
         expires: 10000
       });
 
-      //instantly load
+      // instantly load
       return Promise.all([
         storage.load({
           key: testKey1
@@ -117,7 +112,7 @@ describe('react-native-storage: batch and sync test', () => {
         storage.sync[testKey1] = sync1;
         storage.sync[testKey2] = sync2;
 
-        //save data, expires in no time
+        // save data, expires in no time
         storage.save({
           key: testKey1,
           data: testData1,
@@ -130,7 +125,7 @@ describe('react-native-storage: batch and sync test', () => {
           expires: -1
         });
 
-        //instantly load
+        // instantly load
         return Promise.all([
           storage.load({
             key: testKey1
@@ -155,18 +150,16 @@ describe('react-native-storage: batch and sync test', () => {
         testData1 = 'testData1',
         testData2 = 'testData2',
         syncData = 'syncData';
-      let sync1 = jest.fn(params => {
-        let { resolve } = params;
-        resolve && resolve(syncData);
+      let sync1 = jest.fn(async params => {
+        return syncData;
       });
-      let sync2 = jest.fn(params => {
-        let { id, resolve } = params;
-        resolve && resolve(syncData + id);
+      let sync2 = jest.fn(async params => {
+        return syncData + params.id;
       });
       storage.sync[testKey1] = sync1;
       storage.sync[testKey2] = sync2;
 
-      //save data, expires in no time
+      // save data, expires in no time
       storage.save({
         key: testKey1,
         data: testData1,
@@ -179,7 +172,7 @@ describe('react-native-storage: batch and sync test', () => {
         expires: -1
       });
 
-      //instantly load
+      // instantly load
       return Promise.all([
         storage.load({
           key: testKey1,
@@ -206,12 +199,11 @@ describe('react-native-storage: batch and sync test', () => {
         testData2 = 'testData2',
         testData3 = 'testData3';
       let sync3 = jest.fn(params => {
-        let { resolve } = params;
-        resolve && resolve(testData3);
+        return testData3;
       });
       storage.sync[testKey3] = sync3;
 
-      //save key1 and key2
+      // save key1 and key2
       storage.save({
         key: testKey1,
         data: testData1
@@ -221,7 +213,7 @@ describe('react-native-storage: batch and sync test', () => {
         data: testData2
       });
 
-      //instantly load
+      // instantly load
       return storage.getBatchData([{ key: testKey1 }, { key: testKey2 }, { key: testKey3 }]).then(ret => {
         expect(ret[0]).toBe(testData1);
         expect(ret[1]).toBe(testData2);
@@ -234,16 +226,17 @@ describe('react-native-storage: batch and sync test', () => {
         testId1 = 'testId1' + Math.random(),
         testId2 = 'testId2' + Math.random(),
         testId3 = 'testId3' + Math.random(),
+        testId4 = 'testId4' + Math.random(),
         testData1 = 'testData1',
         testData2 = 'testData2',
-        testData3 = 'testData3';
-      let sync = jest.fn(params => {
-        let { resolve } = params;
+        testData3 = 'testData3',
+        testData4 = 'testData4';
+      let sync = jest.fn(async params => {
         // when id is an array, the return value should be an ordered array too
-        resolve && resolve([testData3]);
+        return [testData2, testData4];
       });
       storage.sync[testKey] = sync;
-      //save id1 and id2
+      // save id1 and id3
       storage.save({
         key: testKey,
         id: testId1,
@@ -251,21 +244,22 @@ describe('react-native-storage: batch and sync test', () => {
       });
       storage.save({
         key: testKey,
-        id: testId2,
-        data: testData2
+        id: testId3,
+        data: testData3
       });
 
-      //instantly load
+      // instantly load
       return storage
         .getBatchDataWithIds({
           key: testKey,
-          ids: [testId1, testId2, testId3]
+          ids: [testId1, testId2, testId3, testId4]
         })
         .then(ret => {
           expect(ret[0]).toBe(testData1);
           expect(ret[1]).toBe(testData2);
           expect(ret[2]).toBe(testData3);
-          expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify([testId3]));
+          expect(ret[3]).toBe(testData4);
+          expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify([testId2, testId4]));
         });
     });
   });
