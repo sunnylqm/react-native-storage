@@ -300,7 +300,7 @@ export default class Storage {
     }
   }
   load(params) {
-    let { key, id, autoSync = true, syncInBackground = true, syncParams } = params;
+    let { key, id, autoSync = true, syncInBackground = true, syncParams, batched = false } = params;
     return this._mapPromise.then(() => new Promise((resolve, reject) => {
       if(id === undefined) {
         return resolve(this._lookupGlobalItem({
@@ -308,7 +308,7 @@ export default class Storage {
         }));
       }
       return resolve(this._lookUpInMap({
-        key, id, resolve, reject, autoSync, syncInBackground, syncParams
+        key, id, resolve, reject, autoSync, syncInBackground, syncParams, batched
       }));
     }));
   }
