@@ -28,7 +28,7 @@
   "typings": "lib/storage.d.ts",
   "scripts": {
     "clean": "rm -rf lib/",
-    "build": "rollup -c && cp src/storage.d.ts lib/",
+    "build": "yarn clean && rollup -c && cp src/storage.d.ts lib/",
     "prepare": "yarn build",
     "test": "jest"
   },
