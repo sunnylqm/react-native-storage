@@ -150,7 +150,7 @@ export default class Storage {
     return Promise.all(querys.map(query => this.load(query)));
   }
   async getBatchDataWithIds(params) {
-    let { key, ids, syncInBackground } = params;
+    let { key, ids, syncInBackground, syncParams } = params;
     const tasks = ids.map(id =>
       this.load({
         key,
@@ -169,7 +169,8 @@ export default class Storage {
     });
     if (missingIds.length) {
       const syncData = await this.sync[key]({
-        id: missingIds
+        id: missingIds,
+        syncParams
       });
       return results.map(value => {
         return value.syncId ? syncData.shift() : value;
@@ -298,7 +299,7 @@ export default class Storage {
     }
   }
   load(params) {
-    const { key, id, autoSync = true, syncInBackground = true, syncParams } = params;
+    const { key, id, autoSync = true, syncInBackground = true, syncParams, batched } = params;
     return this._mapPromise.then(() => {
       if (id === undefined) {
         return this._lookupGlobalItem({
@@ -313,6 +314,7 @@ export default class Storage {
           id,
           autoSync,
           syncInBackground,
+          batched,
           syncParams
         });
       }

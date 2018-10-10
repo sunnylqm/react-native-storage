@@ -222,7 +222,12 @@ describe('react-native-storage: batch and sync test', () => {
       });
     });
     test('returns batch data with batch ids' + `(${storageKey})`, () => {
-      let testKey = 'testKey' + Math.random(),
+      const originDateNow = Date.now;
+      let starttime = 0;
+      Date.now = jest.fn(() => {
+        return (starttime += 100);
+      });
+      const testKey = 'testKey' + Math.random(),
         testId1 = 'testId1' + Math.random(),
         testId2 = 'testId2' + Math.random(),
         testId3 = 'testId3' + Math.random(),
@@ -231,7 +236,7 @@ describe('react-native-storage: batch and sync test', () => {
         testData2 = 'testData2',
         testData3 = 'testData3',
         testData4 = 'testData4';
-      let sync = jest.fn(async params => {
+      const sync = jest.fn(async params => {
         // when id is an array, the return value should be an ordered array too
         return [testData2, testData4];
       });
@@ -247,6 +252,13 @@ describe('react-native-storage: batch and sync test', () => {
         id: testId3,
         data: testData3
       });
+      // save id2 and set it expired immediately
+      storage.save({
+        key: testKey,
+        id: testId2,
+        data: testData2,
+        expires: 1,
+      });
 
       // instantly load
       return storage
@@ -260,6 +272,7 @@ describe('react-native-storage: batch and sync test', () => {
           expect(ret[2]).toBe(testData3);
           expect(ret[3]).toBe(testData4);
           expect(JSON.stringify(sync.mock.calls[0][0].id)).toBe(JSON.stringify([testId2, testId4]));
+          Date.now = originDateNow;
         });
     });
   });
