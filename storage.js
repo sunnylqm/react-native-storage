@@ -203,16 +203,12 @@ export default class Storage {
       }
     }
     let now = new Date().getTime();
-    if(ret.expires < now) {
-      if (autoSync && this.sync[key]){
-        if(syncInBackground) {
-          this.sync[key]({ syncParams });
-          return Promise.resolve(ret.rawData);
-        }
-        return new Promise((resolve, reject) => this.sync[key]({ resolve, reject, syncParams }));
-      }
-      return Promise.reject(new ExpiredError(JSON.stringify(params)));
-    }
+
+    if (ret.expires > now) return Promise.resolve(ret.rawData);
+    if (!(autoSync && this.sync[key])) return Promise.reject(new ExpiredError(JSON.stringify(params)));
+    if (!syncInBackground) return new Promise((resolve, reject) => this.sync[key]({resolve, reject, syncParams}));
+
+    this.sync[key]({syncParams});
     return Promise.resolve(ret.rawData);
   }
   _noItemFound(params) {
