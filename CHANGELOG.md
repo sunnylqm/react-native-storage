@@ -5,7 +5,7 @@
 TODOs:
 
 1. Refactor code.
-2. Complelte test.
+2. Complete tests.
 3. Rewrite doc.
 4. Provide types.
 5. Provide examples.
