@@ -1,4 +1,4 @@
-# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) [![npm version](https://badge.fury.io/js/react-native-storage.svg)](http://badge.fury.io/js/react-native-storage)
+# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg) ![npm beta version](https://img.shields.io/npm/v/react-native-storage/beta.svg)
 
 [English version doc here](README.md)
 

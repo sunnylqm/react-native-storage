@@ -1,4 +1,4 @@
-# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) [![npm version](https://badge.fury.io/js/react-native-storage.svg)](http://badge.fury.io/js/react-native-storage)
+# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg) ![npm beta version](https://img.shields.io/npm/v/react-native-storage/beta.svg)
 
 This is a local storage wrapper for both react native apps (using AsyncStorage) and web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
