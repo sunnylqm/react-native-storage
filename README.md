@@ -6,7 +6,9 @@ This is a local storage wrapper for both react native apps (using AsyncStorage) 
 
 ## Install
 
-    npm install react-native-storage
+```
+npm install react-native-storage@beta
+```
 
 ## Usage
 

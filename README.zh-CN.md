@@ -6,7 +6,9 @@
 
 ## 安装
 
-npm install react-native-storage
+```
+npm install react-native-storage@beta
+```
 
 ## 使用说明
 
