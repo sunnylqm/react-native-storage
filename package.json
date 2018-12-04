@@ -1,6 +1,6 @@
 {
   "name": "react-native-storage",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "A local storage wrapper for both react-native(AsyncStorage) and browser(localStorage).",
   "license": "MIT",
   "repository": {

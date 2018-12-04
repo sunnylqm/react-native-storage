@@ -322,6 +322,7 @@ export default class Storage {
   }
   clearMap() {
     this.removeItem('map').then(() => {
+      this.cache = {};
       this._m = this._initMap();
     });
   }
