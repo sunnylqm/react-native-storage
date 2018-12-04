@@ -1,7 +1,5 @@
 /*
  *  local storage(web/react native) wrapper
- *  sunnylqm 2017-04-20
- *  version 0.2.0
  */
 import { NotFoundError, ExpiredError } from './error';
 
@@ -315,6 +313,7 @@ export default class Storage {
   }
   clearMap() {
     this.removeItem('map').then(() => {
+      this.cache = {};
       this._m = this._initMap();
     });
   }
