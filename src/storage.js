@@ -58,7 +58,7 @@ export default class Storage {
     return {
       innerVersion: this._innerVersion,
       index: 0,
-      __keys__: {}
+      __keys__: {},
     };
   }
   _checkMap(map) {
@@ -141,8 +141,8 @@ export default class Storage {
         this._saveToMap({
           key,
           id,
-          data: dataToSave
-        })
+          data: dataToSave,
+        }),
       );
     }
   }
@@ -157,8 +157,8 @@ export default class Storage {
         id,
         syncInBackground,
         autoSync: false,
-        batched: true
-      })
+        batched: true,
+      }),
     );
     const results = await Promise.all(tasks);
     const missingIds = [];
@@ -170,7 +170,7 @@ export default class Storage {
     if (missingIds.length) {
       const syncData = await this.sync[key]({
         id: missingIds,
-        syncParams
+        syncParams,
       });
       return results.map(value => {
         return value.syncId ? syncData.shift() : value;
@@ -306,7 +306,7 @@ export default class Storage {
           key,
           autoSync,
           syncInBackground,
-          syncParams
+          syncParams,
         });
       } else {
         return this._lookUpInMap({
@@ -315,13 +315,17 @@ export default class Storage {
           autoSync,
           syncInBackground,
           batched,
-          syncParams
+          syncParams,
         });
       }
     });
   }
+  clearAll() {
+    this._s.clear && this._s.clear();
+    this._m = this._initMap();
+  }
   clearMap() {
-    this.removeItem('map').then(() => {
+    return this.removeItem('map').then(() => {
       this.cache = {};
       this._m = this._initMap();
     });
@@ -333,15 +337,12 @@ export default class Storage {
     });
   }
   getIdsForKey(key) {
-    return this._mapPromise.then(() => {
-      return this._m.__keys__[key] || [];
-    });
+    return this._m.__keys__[key] || [];
   }
   getAllDataForKey(key, options) {
     options = Object.assign({ syncInBackground: true }, options);
-    return this.getIdsForKey(key).then(ids => {
-      let querys = ids.map(id => ({ key, id, syncInBackground: options.syncInBackground }));
-      return this.getBatchData(querys);
-    });
+    const ids = this.getIdsForKey(key);
+    const querys = ids.map(id => ({ key, id, syncInBackground: options.syncInBackground }));
+    return this.getBatchData(querys);
   }
 }
