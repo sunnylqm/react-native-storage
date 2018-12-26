@@ -6,14 +6,19 @@ const SIZE = 10,
 const localStorage = new Storage({
   size: SIZE,
   defaultExpires: DEFAULTEXPIRES,
-  storageBackend: global.localStorage
+  storageBackend: global.localStorage,
 });
 const asyncStorage = new Storage({
   size: SIZE,
   defaultExpires: DEFAULTEXPIRES,
-  storageBackend: global.asyncStorage
+  storageBackend: global.asyncStorage,
 });
 const stores = { localStorage, asyncStorage };
+
+beforeEach(() => {
+  localStorage.clearAll();
+  asyncStorage.clearAll();
+});
 
 describe('react-native-storage: basic function', () => {
   Object.keys(stores).map(storageKey => {
@@ -28,14 +33,14 @@ describe('react-native-storage: basic function', () => {
         testString: 'testString',
         testObject: {
           fname: 'foo',
-          lname: 'bar'
+          lname: 'bar',
         },
         testArray: ['one', 'two', 'three'],
         testBoolean: false,
         testNull: null,
         complexObject: {
-          complexArray: [1, 2, 3, 'test', { a: 'b' }]
-        }
+          complexArray: [1, 2, 3, 'test', { a: 'b' }],
+        },
       };
       let returnCases = {},
         returnCasesWithId = {};
@@ -45,35 +50,35 @@ describe('react-native-storage: basic function', () => {
           storage
             .save({
               key,
-              data: testCases[key]
+              data: testCases[key],
             })
             .then(() =>
               storage
                 .load({
-                  key
+                  key,
                 })
                 .then(ret => {
                   returnCases[key] = ret;
-                })
-            )
+                }),
+            ),
         );
         tasks.push(
           storage
             .save({
               key,
               id: 1,
-              data: testCases[key]
+              data: testCases[key],
             })
             .then(() =>
               storage
                 .load({
                   key,
-                  id: 1
+                  id: 1,
                 })
                 .then(ret => {
                   returnCasesWithId[key] = ret;
-                })
-            )
+                }),
+            ),
         );
       }
       return Promise.all(tasks).then(() => {
@@ -91,7 +96,7 @@ describe('react-native-storage: basic function', () => {
       let tasks = [
         storage
           .load({
-            key: testKey1
+            key: testKey1,
           })
           .then(ret => {
             ret1 = ret;
@@ -102,14 +107,14 @@ describe('react-native-storage: basic function', () => {
         storage
           .load({
             key: testKey2,
-            id: testId2
+            id: testId2,
           })
           .then(ret => {
             ret2 = ret;
           })
           .catch(e => {
             error2 = e;
-          })
+          }),
       ];
       return Promise.all(tasks).then(() => {
         expect(ret1).toBeUndefined();
@@ -136,12 +141,12 @@ describe('react-native-storage: basic function', () => {
           .save({
             key: testKey1,
             data: testData1,
-            expires: 1
+            expires: 1,
           })
           .then(() =>
             storage.load({
-              key: testKey1
-            })
+              key: testKey1,
+            }),
           )
           .then(ret => {
             ret1 = ret;
@@ -154,20 +159,20 @@ describe('react-native-storage: basic function', () => {
             key: testKey2,
             id: testId2,
             data: testData2,
-            expires: 1
+            expires: 1,
           })
           .then(() =>
             storage.load({
               key: testKey2,
-              id: testId2
-            })
+              id: testId2,
+            }),
           )
           .then(ret => {
             ret2 = ret;
           })
           .catch(e => {
             error2 = e;
-          })
+          }),
       ];
       return Promise.all(tasks).then(() => {
         expect(ret1).toBeUndefined();
@@ -181,43 +186,43 @@ describe('react-native-storage: basic function', () => {
       let testKey = 'testKey' + Math.random(),
         testId = 'testId' + Math.random(),
         testData = 'testData' + Math.random();
-      let ret1, ret2, done1, done2, cursorIndex1, cursorIndex2;
+      let ret1, ret2, cursorIndex1, cursorIndex2;
 
-      storage.save({
+      cursorIndex1 = storage._m.index; // 0
+
+      await storage.save({
         key: testKey,
         id: testId,
-        data: testData
+        data: testData,
       });
 
-      cursorIndex1 = storage._m.index;
-
       for (let i = 0; i < SIZE - 1; i++) {
-        storage.save({
+        await storage.save({
           key: 'testKey' + Math.random(),
           id: 'testId' + Math.random(),
-          data: 'testData' + Math.random()
+          data: 'testData' + Math.random(),
         });
       }
+
+      cursorIndex2 = storage._m.index; // 0 again
 
       // not overwrited yet
       ret1 = await storage.load({
         key: testKey,
-        id: testId
+        id: testId,
       });
 
       // overwrite
-      storage.save({
+      await storage.save({
         key: 'testKey' + Math.random(),
         id: 'testId' + Math.random(),
-        data: 'testData' + Math.random()
+        data: 'testData' + Math.random(),
       });
-
-      cursorIndex2 = storage._m.index;
 
       try {
         ret2 = await storage.load({
           key: testKey,
-          id: testId
+          id: testId,
         });
       } catch (e) {
         ret2 = e;
@@ -227,6 +232,43 @@ describe('react-native-storage: basic function', () => {
       expect(ret1).toBe(testData);
       expect(ret2 instanceof NotFoundError).toBeTruthy();
     });
+
+    test('overwrites "key+id" data when exceeds SIZE with the same key', async () => {
+      const testKey = 'testKey';
+      let cursorIndex1, cursorIndex2, results;
+
+      cursorIndex1 = storage._m.index;
+      results = [];
+      for (let i = 0; i < SIZE; i++) {
+        const mockData = 'data' + i;
+        results.push(mockData);
+        await storage.save({
+          key: testKey,
+          id: 'testId' + i,
+          data: mockData,
+        });
+      }
+
+      // not overwrited yet
+      expect(JSON.stringify(await storage.getAllDataForKey(testKey))).toBe(JSON.stringify(results));
+
+      cursorIndex2 = storage._m.index; // 0 again
+
+      // overwrite
+      const mockData = 'data-overwrite';
+      results.splice(0, 1);
+      results.push(mockData);
+      await storage.save({
+        key: 'testKey',
+        id: 'testId' + SIZE,
+        data: mockData,
+      });
+
+      expect(JSON.stringify(await storage.getAllDataForKey(testKey))).toBe(JSON.stringify(results));
+
+      expect(cursorIndex1).toBe(cursorIndex2);
+    });
+
     test('removes data correctly' + `(${storageKey})`, () => {
       let testKey1 = 'testKey1' + Math.random(),
         testKey2 = 'testKey2' + Math.random(),
@@ -240,12 +282,12 @@ describe('react-native-storage: basic function', () => {
           .save({
             key,
             id,
-            data
+            data,
           })
           .then(() => {
             return storage.load({
               key,
-              id
+              id,
             });
           })
           .then(ret => {
@@ -268,7 +310,7 @@ describe('react-native-storage: basic function', () => {
           expect(ret1[1]).toBe('catched');
           expect(ret2[0]).toBe(testData2);
           expect(ret2[1]).toBe('catched');
-        }
+        },
       );
     });
 
@@ -281,9 +323,9 @@ describe('react-native-storage: basic function', () => {
           storage.save({
             key,
             id,
-            data: testDatas[i]
-          })
-        )
+            data: testDatas[i],
+          }),
+        ),
       )
         .then(() => {
           return storage.getAllDataForKey(key);
@@ -303,9 +345,9 @@ describe('react-native-storage: basic function', () => {
           storage.save({
             key,
             id,
-            data: testDatas[i]
-          })
-        )
+            data: testDatas[i],
+          }),
+        ),
       )
         .then(() => {
           return storage.clearMapForKey(key);
@@ -334,13 +376,11 @@ describe('react-native-storage: basic function', () => {
         storage.save({
           key,
           id,
-          data
-        })
+          data,
+        }),
       );
       return Promise.all(tasks).then(() => {
-        storage.getIdsForKey(key).then(rets => {
-          expect(rets).toEqual(testIds);
-        });
+        expect(storage.getIdsForKey(key)).toEqual(testIds);
       });
     });
   });
