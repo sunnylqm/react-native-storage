@@ -1,4 +1,4 @@
-# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg) ![npm beta version](https://img.shields.io/npm/v/react-native-storage/beta.svg)
+# react-native-storage [![Backers on Open Collective](https://opencollective.com/react-native-storage/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/react-native-storage/sponsors/badge.svg)](#sponsors) [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg) ![npm beta version](https://img.shields.io/npm/v/react-native-storage/beta.svg)
 
 This is a local storage wrapper for both react native apps (using AsyncStorage) and web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
@@ -275,3 +275,33 @@ There is an important difference between the way these two methods perform:
 **getBatchData** will invoke separate sync methods for each different key one after the other when the corresponding data is missing or not in sync. However, **getBatchDataWithIds** will collect a list of the missing data, pushing their ids to an array, and then pass the array to the single corresponding sync method once, reducing the number of requests, so you need to implement array query on the server side and handle the parameters of sync method properly. Note that the id parameter can be a single string or an array of strings.
 
 #### You are welcome to ask any question in the [issues](https://github.com/sunnylqm/react-native-storage/issues) page.
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/sunnylqm/react-native-storage/graphs/contributors"><img src="https://opencollective.com/react-native-storage/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/react-native-storage#backer)]
+
+<a href="https://opencollective.com/react-native-storage#backers" target="_blank"><img src="https://opencollective.com/react-native-storage/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/react-native-storage#sponsor)]
+
+<a href="https://opencollective.com/react-native-storage/sponsor/0/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/1/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/2/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/3/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/4/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/5/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/6/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/7/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/8/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/react-native-storage/sponsor/9/website" target="_blank"><img src="https://opencollective.com/react-native-storage/sponsor/9/avatar.svg"></a>
+
+
