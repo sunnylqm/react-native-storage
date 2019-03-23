@@ -204,10 +204,14 @@ export default class Storage {
     if (ret.expires < now) {
       if (autoSync && this.sync[key]) {
         if (syncInBackground) {
-          this.sync[key]({ syncParams });
+          try {
+            this.sync[key]({ syncParams, syncInBackground });
+          } catch (e) {
+            // avoid uncaught exception
+          }
           return ret.rawData;
         }
-        return this.sync[key]({ syncParams });
+        return this.sync[key]({ syncParams, syncInBackground });
       }
       throw new ExpiredError(JSON.stringify(params));
     }
@@ -240,10 +244,14 @@ export default class Storage {
     if (ret.expires < now) {
       if (autoSync && this.sync[key]) {
         if (syncInBackground) {
-          this.sync[key]({ id, syncParams });
+          try {
+            this.sync[key]({ id, syncParams, syncInBackground });
+          } catch (e) {
+            // avoid uncaught exception
+          }
           return ret.rawData;
         }
-        return this.sync[key]({ id, syncParams });
+        return this.sync[key]({ id, syncParams, syncInBackground });
       }
       if (batched) {
         return { syncId: id };

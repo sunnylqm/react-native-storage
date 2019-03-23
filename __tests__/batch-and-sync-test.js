@@ -4,10 +4,10 @@
 
 import Storage from '../src/storage';
 const localStorage = new Storage({
-  storageBackend: global.localStorage
+  storageBackend: global.localStorage,
 });
 const asyncStorage = new Storage({
-  storageBackend: global.asyncStorage
+  storageBackend: global.asyncStorage,
 });
 const stores = { localStorage, asyncStorage };
 
@@ -31,13 +31,13 @@ describe('react-native-storage: batch and sync test', () => {
       return Promise.all([
         // key not found
         storage.load({
-          key: testKey1
+          key: testKey1,
         }),
         // key and id not found
         storage.load({
           key: testKey2,
-          id: testId2
-        })
+          id: testId2,
+        }),
       ]).then(([ret1, ret2]) => {
         expect(ret1).toBe(syncData);
         expect(sync1.mock.calls.length).toBe(1);
@@ -67,24 +67,24 @@ describe('react-native-storage: batch and sync test', () => {
       storage.save({
         key: testKey1,
         data: testData1,
-        expires: 10000
+        expires: 10000,
       });
       storage.save({
         key: testKey2,
         id: testId2,
         data: testData2,
-        expires: 10000
+        expires: 10000,
       });
 
       // instantly load
       return Promise.all([
         storage.load({
-          key: testKey1
+          key: testKey1,
         }),
         storage.load({
           key: testKey2,
-          id: testId2
-        })
+          id: testId2,
+        }),
       ]).then(([ret1, ret2]) => {
         expect(ret1).toBe(testData1);
         expect(sync1.mock.calls.length).toBe(0);
@@ -102,12 +102,11 @@ describe('react-native-storage: batch and sync test', () => {
           testData2 = 'testData2',
           syncData = 'syncData';
         let sync1 = jest.fn(params => {
-          let { resolve } = params;
-          resolve && resolve(syncData);
+          return syncData;
         });
         let sync2 = jest.fn(params => {
-          let { id, resolve } = params;
-          resolve && resolve(syncData + id);
+          const { id } = params;
+          return syncData + id;
         });
         storage.sync[testKey1] = sync1;
         storage.sync[testKey2] = sync2;
@@ -116,24 +115,24 @@ describe('react-native-storage: batch and sync test', () => {
         storage.save({
           key: testKey1,
           data: testData1,
-          expires: -1
+          expires: -1,
         });
         storage.save({
           key: testKey2,
           id: testId2,
           data: testData2,
-          expires: -1
+          expires: -1,
         });
 
         // instantly load
         return Promise.all([
           storage.load({
-            key: testKey1
+            key: testKey1,
           }),
           storage.load({
             key: testKey2,
-            id: testId2
-          })
+            id: testId2,
+          }),
         ]).then(([ret1, ret2]) => {
           expect(ret1).toBe(testData1);
           expect(sync1.mock.calls.length).toBe(1);
@@ -141,7 +140,7 @@ describe('react-native-storage: batch and sync test', () => {
           expect(ret2).toBe(testData2);
           expect(sync2.mock.calls.length).toBe(1);
         });
-      }
+      },
     );
     test('triggers sync when data expires and returns latest data(syncInBackground: false)' + `(${storageKey})`, () => {
       let testKey1 = 'testKey1' + Math.random(),
@@ -163,26 +162,26 @@ describe('react-native-storage: batch and sync test', () => {
       storage.save({
         key: testKey1,
         data: testData1,
-        expires: -1
+        expires: -1,
       });
       storage.save({
         key: testKey2,
         id: testId2,
         data: testData2,
-        expires: -1
+        expires: -1,
       });
 
       // instantly load
       return Promise.all([
         storage.load({
           key: testKey1,
-          syncInBackground: false
+          syncInBackground: false,
         }),
         storage.load({
           key: testKey2,
           id: testId2,
-          syncInBackground: false
-        })
+          syncInBackground: false,
+        }),
       ]).then(([ret1, ret2]) => {
         expect(ret1).toBe(syncData);
         expect(sync1.mock.calls.length).toBe(1);
@@ -206,11 +205,11 @@ describe('react-native-storage: batch and sync test', () => {
       // save key1 and key2
       storage.save({
         key: testKey1,
-        data: testData1
+        data: testData1,
       });
       storage.save({
         key: testKey2,
-        data: testData2
+        data: testData2,
       });
 
       // instantly load
@@ -245,12 +244,12 @@ describe('react-native-storage: batch and sync test', () => {
       storage.save({
         key: testKey,
         id: testId1,
-        data: testData1
+        data: testData1,
       });
       storage.save({
         key: testKey,
         id: testId3,
-        data: testData3
+        data: testData3,
       });
       // save id2 and set it expired immediately
       storage.save({
@@ -264,7 +263,7 @@ describe('react-native-storage: batch and sync test', () => {
       return storage
         .getBatchDataWithIds({
           key: testKey,
-          ids: [testId1, testId2, testId3, testId4]
+          ids: [testId1, testId2, testId3, testId4],
         })
         .then(ret => {
           expect(ret[0]).toBe(testData1);

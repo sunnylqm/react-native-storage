@@ -2,14 +2,10 @@
 
 #### 1.0.0
 
-TODOs:
-
 1. Refactor code.
 2. Complete tests.
-3. Rewrite doc.
-4. Provide types.
-5. Provide examples.
-6. Provide prebuilt lib for web.
+3. Provide types.
+4. Provide prebuilt lib for web.
 
 #### 0.2.2
 
