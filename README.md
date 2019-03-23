@@ -1,4 +1,4 @@
-# react-native-storage [![Backers on Open Collective](https://opencollective.com/react-native-storage/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/react-native-storage/sponsors/badge.svg)](#sponsors) [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg) ![npm beta version](https://img.shields.io/npm/v/react-native-storage/beta.svg)
+# react-native-storage [![Backers on Open Collective](https://opencollective.com/react-native-storage/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/react-native-storage/sponsors/badge.svg)](#sponsors) [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg)
 
 This is a local storage wrapper for both react native apps (using AsyncStorage) and web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
@@ -7,7 +7,7 @@ This is a local storage wrapper for both react native apps (using AsyncStorage) 
 ## Install
 
 ```
-npm install react-native-storage@beta
+npm install react-native-storage
 ```
 
 ## Usage

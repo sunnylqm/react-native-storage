@@ -1,4 +1,4 @@
-# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg) ![npm beta version](https://img.shields.io/npm/v/react-native-storage/beta.svg)
+# react-native-storage [![Build Status](https://travis-ci.org/sunnylqm/react-native-storage.svg)](https://travis-ci.org/sunnylqm/react-native-storage) ![npm version](https://img.shields.io/npm/v/react-native-storage.svg)
 
 [English version doc here](README.md)
 
@@ -7,7 +7,7 @@
 ## 安装
 
 ```
-npm install react-native-storage@beta
+npm install react-native-storage
 ```
 
 ## 使用说明
@@ -35,7 +35,7 @@ const storage = new Storage({
   // 如果storage中没有相应数据，或数据已过期，
   // 则会调用相应的sync方法，无缝返回最新数据。
   // sync方法的具体说明会在后文提到
-  sync: require('你可以另外写一个文件专门处理sync')
+  sync: require('你可以另外写一个文件专门处理sync'),
 });
 
 // 最好在全局范围内创建一个（且只有一个）storage实例，方便直接调用
@@ -65,12 +65,12 @@ storage.save({
   data: {
     from: 'some other site',
     userid: 'some userid',
-    token: 'some token'
+    token: 'some token',
   },
 
   // 如果不指定过期时间，则会使用defaultExpires参数
   // 如果设为null，则永不过期
-  expires: 1000 * 3600
+  expires: 1000 * 3600,
 });
 
 // 读取
@@ -89,8 +89,8 @@ storage
       extraFetchOptions: {
         // 各种参数
       },
-      someFlag: true
-    }
+      someFlag: true,
+    },
   })
   .then(ret => {
     // 如果找到数据，则在then方法中返回
@@ -129,21 +129,21 @@ storage
 var userA = {
   name: 'A',
   age: 20,
-  tags: ['geek', 'nerd', 'otaku']
+  tags: ['geek', 'nerd', 'otaku'],
 };
 
 storage.save({
   key: 'user', // 注意:请不要在key中使用_下划线符号!
   id: '1001', // 注意:请不要在id中使用_下划线符号!
   data: userA,
-  expires: 1000 * 60
+  expires: 1000 * 60,
 });
 
 //load 读取
 storage
   .load({
     key: 'user',
-    id: '1001'
+    id: '1001',
   })
   .then(ret => {
     // 如果找到数据，则在then方法中返回
@@ -182,11 +182,11 @@ storage.clearMapForKey('user');
 
 // 删除单个数据
 storage.remove({
-  key: 'lastPage'
+  key: 'lastPage',
 });
 storage.remove({
   key: 'user',
-  id: '1001'
+  id: '1001',
 });
 
 // !! 清空map，移除所有"key-id"数据（但会保留只有key的数据）
