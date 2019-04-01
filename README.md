@@ -9,7 +9,11 @@ This is a local storage wrapper for both react native apps (using AsyncStorage) 
 ```
 npm install react-native-storage
 npm install @react-native-community/async-storage
+```
+
 or
+
+```
 yarn add react-native-storage
 yarn add @react-native-community/async-storage
 ```
