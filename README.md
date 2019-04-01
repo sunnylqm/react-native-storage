@@ -11,7 +11,7 @@ npm install react-native-storage
 npm install @react-native-community/async-storage
 or
 yarn add react-native-storage
-yarn add install @react-native-community/async-storage
+yarn add @react-native-community/async-storage
 ```
 
 ## Link
