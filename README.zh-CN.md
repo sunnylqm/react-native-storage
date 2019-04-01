@@ -9,9 +9,13 @@
 ```
 npm install react-native-storage
 npm install @react-native-community/async-storage
+```
+
 或者
+
+```
 yarn add react-native-storage
-yarn add install @react-native-community/async-storage
+yarn add @react-native-community/async-storage
 ```
 
 ## 链接
