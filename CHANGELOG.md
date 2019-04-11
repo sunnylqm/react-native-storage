@@ -1,5 +1,10 @@
 ### Changelog
 
+#### 1.0.1
+
+1. Fix getAllDataForKey crash.
+2. Fix babel config for web compatiblity.
+
 #### 1.0.0
 
 1. Refactor code.
