@@ -379,8 +379,8 @@ describe('react-native-storage: basic function', () => {
           data,
         }),
       );
-      return Promise.all(tasks).then(() => {
-        expect(storage.getIdsForKey(key)).toEqual(testIds);
+      return Promise.all(tasks).then(async () => {
+        expect(await storage.getIdsForKey(key)).toEqual(testIds);
       });
     });
   });

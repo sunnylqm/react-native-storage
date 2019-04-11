@@ -30,7 +30,6 @@ export default class Storage {
 
     this._mapPromise = this.getItem('map').then(map => {
       this._m = this._checkMap((map && JSON.parse(map)) || {});
-      // delete this._mapPromise;
     });
   }
   getItem(key) {
@@ -345,12 +344,15 @@ export default class Storage {
     });
   }
   getIdsForKey(key) {
-    return this._m.__keys__[key] || [];
+    return this._mapPromise.then(() => {
+      return this._m.__keys__[key] || [];
+    });
   }
   getAllDataForKey(key, options) {
     options = Object.assign({ syncInBackground: true }, options);
-    const ids = this.getIdsForKey(key);
-    const querys = ids.map(id => ({ key, id, syncInBackground: options.syncInBackground }));
-    return this.getBatchData(querys);
+    return this.getIdsForKey(key).then(ids => {
+      const querys = ids.map(id => ({ key, id, syncInBackground: options.syncInBackground }));
+      return this.getBatchData(querys);
+    });
   }
 }
