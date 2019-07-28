@@ -4,6 +4,8 @@
  */
 import { NotFoundError, ExpiredError } from './error';
 
+export { NotFoundError, ExpiredError };
+
 export default class Storage {
   constructor(options = {}) {
     this._SIZE = options.size || 1000; // maximum capacity
