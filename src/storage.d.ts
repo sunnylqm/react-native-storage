@@ -6,6 +6,14 @@ export interface LoadParams {
 	syncParams?: any;
 }
 
+export class NotFoundError extends Error {
+  name: string;
+}
+
+export class ExpiredError extends Error {
+  name: string;
+}
+
 export default class Storage {
 	sync: any;
 
