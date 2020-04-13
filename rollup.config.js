@@ -1,6 +1,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser';
+import commonjs from 'rollup-plugin-commonjs';
 
 const env = process.env.NODE_ENV;
 const config = {
@@ -31,6 +32,9 @@ const config = {
       exclude: 'node_modules/**',
     }),
     terser(),
+    commonjs({
+      include: 'node_modules/**'
+    })
   ],
 };
 
