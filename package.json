@@ -52,8 +52,9 @@
     "rollup-plugin-terser": "^4.0.4"
   },
   "dependencies": {
+    "opencollective": "^1.0.3",
     "opencollective-postinstall": "^2.0.2",
-    "opencollective": "^1.0.3"
+    "p-limit": "^2.3.0"
   },
   "collective": {
     "type": "opencollective",

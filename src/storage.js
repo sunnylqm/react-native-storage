@@ -3,6 +3,7 @@
  *  sunnylqm
  */
 import { NotFoundError, ExpiredError } from './error';
+import PLimit from 'p-limit'
 
 export { NotFoundError, ExpiredError };
 
@@ -15,6 +16,7 @@ export default class Storage {
     this._s = options.storageBackend || null;
     this._innerVersion = 11;
     this.cache = {};
+    this.limiter = PLimit(options.concurrency > 0 ? options.concurrency : 300)
 
     if (this._s && this._s.setItem) {
       try {
@@ -148,18 +150,18 @@ export default class Storage {
     }
   }
   getBatchData(querys) {
-    return Promise.all(querys.map(query => this.load(query)));
+    return Promise.all(querys.map(query => this.limiter(() => this.load(query))));
   }
   async getBatchDataWithIds(params) {
     let { key, ids, syncInBackground, syncParams } = params;
-    const tasks = ids.map(id =>
+    const tasks = ids.map(id => this.limiter(() =>
       this.load({
         key,
         id,
         syncInBackground,
         autoSync: false,
         batched: true,
-      }),
+      })),
     );
     const results = await Promise.all(tasks);
     const missingIds = [];
@@ -341,7 +343,7 @@ export default class Storage {
   }
   clearMapForKey(key) {
     return this._mapPromise.then(() => {
-      let tasks = (this._m.__keys__[key] || []).map(id => this.remove({ key, id }));
+      let tasks = (this._m.__keys__[key] || []).map(id => this.limiter(() => this.remove({ key, id })));
       return Promise.all(tasks);
     });
   }
