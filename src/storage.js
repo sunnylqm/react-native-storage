@@ -8,7 +8,7 @@ export { NotFoundError, ExpiredError };
 
 export default class Storage {
   constructor(options = {}) {
-    this._SIZE = options.size || 1000; // maximum capacity
+    this._SIZE = options.size || 1000; // maximum key-ids capacity
     this.sync = options.sync || {}; // remote sync method
     this.defaultExpires = options.defaultExpires !== undefined ? options.defaultExpires : 1000 * 3600 * 24;
     this.enableCache = options.enableCache !== false;
