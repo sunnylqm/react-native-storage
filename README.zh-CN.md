@@ -28,6 +28,7 @@ react-native link @react-native-community/async-storage
 ### 初始化
 
 ```javascript
+// storage.js
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -51,21 +52,7 @@ const storage = new Storage({
   sync: require('你可以另外写一个文件专门处理sync'),
 });
 
-// 最好在全局范围内创建一个（且只有一个）storage实例，方便直接调用
-
-// 对于web
-// window.storage = storage;
-
-// 对于react native
-// global.storage = storage;
-
-// 这样，在此**之后**的任意位置即可以直接调用storage
-// 注意：全局变量一定是先声明，后使用
-// 如果你在某处调用storage报错未定义
-// 请检查global.storage = storage语句是否确实已经执行过了
-```
-
-不了解全局变量的使用？请点这里 https://github.com/sunnylqm/react-native-storage/issues/29
+export default storage;
 
 ### 保存、读取和删除
 
