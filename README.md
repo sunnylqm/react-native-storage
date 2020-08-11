@@ -55,13 +55,7 @@ const storage = new Storage({
   }
 });
 
-// I suggest you have one (and only one) storage instance in global scope.
-
-// for web
-// window.storage = storage;
-
-// for react native
-// global.storage = storage;
+export default storage;
 ```
 
 ### Save & Load & Remove
