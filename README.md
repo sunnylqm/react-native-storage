@@ -8,20 +8,14 @@ This is a local storage wrapper for both react native apps (using AsyncStorage) 
 
 ```
 npm install react-native-storage
-npm install @react-native-community/async-storage
+npm install @react-native-async-storage/async-storage
 ```
 
 or
 
 ```
 yarn add react-native-storage
-yarn add @react-native-community/async-storage
-```
-
-## Link
-
-```
-react-native link @react-native-community/async-storage
+yarn add @react-native-async-storage/async-storage
 ```
 
 ## Usage
@@ -30,7 +24,7 @@ react-native link @react-native-community/async-storage
 
 ```js
 import Storage from 'react-native-storage';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const storage = new Storage({
   // maximum capacity, default 1000 key-ids
