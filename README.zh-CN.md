@@ -8,20 +8,16 @@
 
 ```
 npm install react-native-storage
-npm install @react-native-community/async-storage
+npm install @react-native-async-storage/async-storage
 ```
 
 或者
 
 ```
 yarn add react-native-storage
-yarn add @react-native-community/async-storage
+yarn add @react-native-async-storage/async-storage
 ```
 
-## 链接
-```
-react-native link @react-native-community/async-storage
-```
 
 ## 使用说明
 
@@ -30,7 +26,7 @@ react-native link @react-native-community/async-storage
 ```javascript
 // storage.js
 import Storage from 'react-native-storage';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const storage = new Storage({
   // 最大容量，默认值1000条数据循环存储
