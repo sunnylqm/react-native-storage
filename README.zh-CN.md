@@ -52,6 +52,7 @@ const storage = new Storage({
 });
 
 export default storage;
+```
 
 ### 保存、读取和删除
 
