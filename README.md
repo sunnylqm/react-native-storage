@@ -2,6 +2,8 @@
 
 This is a local storage wrapper for both react native apps (using AsyncStorage) and web apps (using localStorage). [ES6](http://babeljs.io/docs/learn-es2015/) syntax, promise for async load, fully tested with jest.
 
+For a more modern and unified approach to handling requests, caching, and persistent storage, I recommend using [`useQuery`](https://tanstack.com/query/v5/docs/framework/react/quick-start) together with [`createAsyncStoragePersister`](https://tanstack.com/query/v5/docs/framework/react/plugins/createAsyncStoragePersister). It’s cleaner, more elegant, and more powerful.
+
 查看中文文档[请点击 README-CHN.md](README.zh-CN.md)
 
 ## Install
